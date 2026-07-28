@@ -22,15 +22,15 @@ export default function CyberBackground() {
     };
     window.addEventListener("resize", handleResize);
 
-    // Vibrant glowing particle nodes
-    const particleCount = 65;
+    // Dynamic glowing particle nodes
+    const particleCount = 60;
     const particles = Array.from({ length: particleCount }).map(() => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.6,
-      vy: (Math.random() - 0.5) * 0.6,
-      size: Math.random() * 3.2 + 1.8,
-      alpha: Math.random() * 0.6 + 0.3,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 2.8 + 1.5,
+      alpha: Math.random() * 0.5 + 0.3,
     }));
 
     const render = () => {
@@ -61,8 +61,8 @@ export default function CyberBackground() {
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 140) {
-            ctx.strokeStyle = `rgba(0, 255, 179, ${0.35 * (1 - dist / 140)})`;
+          if (dist < 135) {
+            ctx.strokeStyle = `rgba(0, 255, 179, ${0.28 * (1 - dist / 135)})`;
             ctx.lineWidth = 1.0;
             ctx.shadowColor = "#00ffb3";
             ctx.shadowBlur = 4;
@@ -88,7 +88,7 @@ export default function CyberBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-20 opacity-80"
+      className="fixed inset-0 pointer-events-none z-[1] opacity-80"
     />
   );
 }
