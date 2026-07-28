@@ -33,7 +33,7 @@ export default function CyberBackground() {
       y: -1000,
       radius: 160,
       orbitRadius: 52,
-      maxCapacity: 10, // Max 10 nodes allowed in cursor circle
+      maxCapacity: 30,
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -51,7 +51,7 @@ export default function CyberBackground() {
     window.addEventListener("resize", handleResize);
 
     // Dynamic Binary Nodes (0s and 1s)
-    const particleCount = 65;
+    const particleCount = 120;
     const particles: BinaryParticle[] = Array.from({ length: particleCount }).map((_, idx) => ({
       id: idx,
       x: Math.random() * width,
@@ -68,7 +68,15 @@ export default function CyberBackground() {
       ctx.clearRect(0, 0, width, height);
       orbitAngle += 0.015; // Smooth slow ring rotation
 
-      // Identify nearby nodes capped at maxCapacity (10 nodes max)
+      // Accurately detect Light Mode class on theme container
+      const isLightMode = Boolean(document.querySelector(".theme-matrix-light"));
+      const isDark = !isLightMode;
+
+      // Dark Mode = Bright Neon (0, 255, 179) / Light Mode = High-Contrast Dark Teal (15, 118, 110)
+      const rgbColor = isDark ? "0, 255, 179" : "15, 118, 110";
+      const shadowColor = isDark ? "#00ffb3" : "#0f766e";
+
+      // Identify nearby nodes capped at maxCapacity
       const nearbyNodes = particles
         .map((p) => {
           const dx = p.x - mouse.x;
@@ -85,10 +93,10 @@ export default function CyberBackground() {
 
       // Draw dashed orbital ring around cursor when nearby
       if (mouse.x > 0 && mouse.y > 0 && nearbyNodes.length > 0) {
-        ctx.strokeStyle = "rgba(0, 255, 179, 0.35)";
-        ctx.lineWidth = 1.2;
-        ctx.shadowColor = "#00ffb3";
-        ctx.shadowBlur = 8;
+        ctx.strokeStyle = `rgba(${rgbColor}, ${isDark ? 0.35 : 0.75})`;
+        ctx.lineWidth = isDark ? 1.2 : 1.6;
+        ctx.shadowColor = shadowColor;
+        ctx.shadowBlur = isDark ? 8 : 4;
         ctx.setLineDash([4, 6]);
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, mouse.orbitRadius, 0, Math.PI * 2);
@@ -111,7 +119,7 @@ export default function CyberBackground() {
           const targetX = mouse.x + mouse.orbitRadius * Math.cos(angle);
           const targetY = mouse.y + mouse.orbitRadius * Math.sin(angle);
 
-          // Smooth silky interpolation towards orbit position (no violent jumps!)
+          // Smooth silky interpolation towards orbit position
           p.x += (targetX - p.x) * 0.07;
           p.y += (targetY - p.y) * 0.07;
         } else {
@@ -126,11 +134,11 @@ export default function CyberBackground() {
         if (p.y < -10) p.y = height + 10;
         if (p.y > height + 10) p.y = -10;
 
-        // Draw Binary Character
+        // Draw Binary Character (High contrast dark teal in Light Mode)
         ctx.font = `bold ${p.fontSize}px var(--font-geist-mono), monospace`;
-        ctx.fillStyle = `rgba(0, 255, 179, ${p.alpha})`;
-        ctx.shadowColor = "#00ffb3";
-        ctx.shadowBlur = isNearMouse ? 12 : 6;
+        ctx.fillStyle = `rgba(${rgbColor}, ${isNearMouse ? 0.95 : (isDark ? p.alpha : Math.min(0.9, p.alpha + 0.35))})`;
+        ctx.shadowColor = shadowColor;
+        ctx.shadowBlur = isNearMouse ? (isDark ? 12 : 4) : (isDark ? 6 : 2);
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(p.char, p.x, p.y);
@@ -144,10 +152,13 @@ export default function CyberBackground() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < 125) {
-            ctx.strokeStyle = `rgba(0, 255, 179, ${0.28 * (1 - dist / 125)})`;
-            ctx.lineWidth = 0.8;
-            ctx.shadowColor = "#00ffb3";
-            ctx.shadowBlur = 3;
+            const lineOpacity = isDark
+              ? 0.28 * (1 - dist / 125)
+              : 0.55 * (1 - dist / 125);
+            ctx.strokeStyle = `rgba(${rgbColor}, ${lineOpacity})`;
+            ctx.lineWidth = isDark ? 0.8 : 1.2;
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = isDark ? 3 : 1;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -163,10 +174,13 @@ export default function CyberBackground() {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < mouse.radius) {
-          ctx.strokeStyle = `rgba(0, 255, 179, ${0.4 * (1 - dist / mouse.radius)})`;
-          ctx.lineWidth = 1.0;
-          ctx.shadowColor = "#00ffb3";
-          ctx.shadowBlur = 6;
+          const rayOpacity = isDark
+            ? 0.4 * (1 - dist / mouse.radius)
+            : 0.7 * (1 - dist / mouse.radius);
+          ctx.strokeStyle = `rgba(${rgbColor}, ${rayOpacity})`;
+          ctx.lineWidth = isDark ? 1.0 : 1.4;
+          ctx.shadowColor = shadowColor;
+          ctx.shadowBlur = isDark ? 6 : 3;
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(mouse.x, mouse.y);
