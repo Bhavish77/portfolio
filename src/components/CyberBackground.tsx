@@ -33,6 +33,7 @@ export default function CyberBackground() {
       y: -1000,
       radius: 160,
       orbitRadius: 52,
+      maxCapacity: 10, // Max 10 nodes allowed in cursor circle
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -67,12 +68,20 @@ export default function CyberBackground() {
       ctx.clearRect(0, 0, width, height);
       orbitAngle += 0.015; // Smooth slow ring rotation
 
-      // Identify nearby nodes
-      const nearbyNodes = particles.filter((p) => {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        return Math.sqrt(dx * dx + dy * dy) < mouse.radius;
-      });
+      // Identify nearby nodes capped at maxCapacity (10 nodes max)
+      const nearbyNodes = particles
+        .map((p) => {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          return { p, dist };
+        })
+        .filter((item) => item.dist < mouse.radius)
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, mouse.maxCapacity)
+        .map((item) => item.p);
+
+      const nearbySet = new Set(nearbyNodes.map((p) => p.id));
 
       // Draw dashed orbital ring around cursor when nearby
       if (mouse.x > 0 && mouse.y > 0 && nearbyNodes.length > 0) {
@@ -94,10 +103,7 @@ export default function CyberBackground() {
           p.char = p.char === "1" ? "0" : "1";
         }
 
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const isNearMouse = dist < mouse.radius;
+        const isNearMouse = nearbySet.has(p.id);
 
         if (isNearMouse) {
           // Calculate stable circular target position around mouse
