@@ -2,11 +2,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Terminal, Sparkles, RefreshCw, Palette, User, Bot, ArrowRight } from "lucide-react";
+import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, Layers } from "lucide-react";
 import WorkExperienceWidget from "./widgets/WorkExperienceWidget";
 import ProjectsWidget from "./widgets/ProjectsWidget";
 import TechStackWidget from "./widgets/TechStackWidget";
 import { Button } from "@/components/ui/button";
+import { AsciiArt } from "@/components/ui/ascii-art";
 
 export type MessageRole = "user" | "assistant";
 export type WidgetType = "work-experience" | "main-projects" | "tech-stack" | "theme-feedback";
@@ -26,29 +27,80 @@ export default function ChatConsole() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initial Onboarding Messages
+  // Pre-populated Traditional Portfolio Initial Stream
   const initialMessages: MessageItem[] = [
     {
       id: "init-1",
       role: "assistant",
-      text: "👋 Welcome to my AI-powered portfolio! I'm Bhavish's Portfolio Agent. Instead of forcing you through traditional page scrolling, I route content directly based on your intent.",
-      timestamp: new Date(),
+      text: "👋 Welcome to my portfolio! I'm Bhavish's AI Digital Clone. Below is my complete career timeline, featured projects, and tech stack pre-rendered for instant exploration.",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
     },
     {
-      id: "init-2",
+      id: "sec-experience",
       role: "assistant",
-      text: "Explore my background using the prompt chips below, or ask any question!",
-      suggestion: "Try clicking [💼 Work Experience] to see my interactive career timeline.",
-      timestamp: new Date(),
+      text: "💼 WORK EXPERIENCE & CAREER TIMELINE",
+      widget: "work-experience",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
+    },
+    {
+      id: "sec-projects",
+      role: "assistant",
+      text: "🚀 FEATURED PRODUCTION PROJECTS & REPOSITORIES",
+      widget: "main-projects",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
+    },
+    {
+      id: "sec-techstack",
+      role: "assistant",
+      text: "🛠️ TECHNICAL STACK ARCHITECTURE & TOOLS",
+      widget: "tech-stack",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
+    },
+    {
+      id: "init-prompt",
+      role: "assistant",
+      text: "💬 Feel free to ask my AI Digital Clone any questions about my background, architecture decisions, or engineering experience below!",
+      suggestion: "Or click any quick action in the left dock to jump directly to a section.",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
     },
   ];
 
   const [messages, setMessages] = useState<MessageItem[]>(initialMessages);
 
-  // Auto-scroll to bottom on new message
+  // Scroll to bottom on user input or typing state update
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > initialMessages.length || isTyping) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, isTyping]);
+
+  // Smooth scroll handler for quick action dock
+  const scrollToSection = (targetId: string, queryLabel: string) => {
+    // 1. Check if theme toggle
+    if (targetId === "theme-toggle") {
+      const nextTheme = theme === "dark" ? "light" : "dark";
+      setTheme(nextTheme);
+
+      const assistantMessage: MessageItem = {
+        id: `ast-${Date.now()}`,
+        role: "assistant",
+        text: `Switched UI mode to MATRIX ${nextTheme.toUpperCase()}!`,
+        widget: "theme-feedback",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      return;
+    }
+
+    // 2. Try scrolling to existing pre-populated section
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Fallback if not found, send query to append
+      handleSend(queryLabel);
+    }
+  };
 
   // Handle Interceptor / Deterministic Path A vs Path B
   const handleSend = (overrideQuery?: string) => {
@@ -112,7 +164,7 @@ export default function ChatConsole() {
         role: "assistant",
         text: "Here is my architecture tech stack breakdown:",
         widget: "tech-stack",
-        suggestion: "Want to try another aesthetic? Click [🎨 Matrix UI Theme] to switch theme modes!",
+        suggestion: "Want to try light mode? Click [☀️ Light / 🌙 Dark Mode] to toggle theme modes!",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -129,7 +181,6 @@ export default function ChatConsole() {
         role: "assistant",
         text: `Switched UI mode to MATRIX ${nextTheme.toUpperCase()}!`,
         widget: "theme-feedback",
-        suggestion: "Click [💼 Work Experience] to view the timeline under this aesthetic.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -140,7 +191,7 @@ export default function ChatConsole() {
     const fallbackMessage: MessageItem = {
       id: `ast-${Date.now()}`,
       role: "assistant",
-      text: `I received your query: "${query}". I am operating in Phase 1 (UI & Deterministic Router). Multi-step RAG inference via Gemini 1.5 Flash & Pinecone will be hooked up in Phase 2! In the meantime, try one of the prompt chips below.`,
+      text: `I received your query: "${query}". I am operating in Phase 1 (UI & Deterministic Router). Multi-step RAG inference via Gemini 1.5 Flash & Pinecone will be hooked up in Phase 2! In the meantime, try one of the prompt chips.`,
       suggestion: "Click [🚀 Main Projects] to see my project showcase.",
       timestamp: new Date(),
     };
@@ -152,173 +203,271 @@ export default function ChatConsole() {
   };
 
   const promptChips = [
-    { label: "💼 Work Experience", query: "💼 Work Experience" },
-    { label: "🚀 Main Projects", query: "🚀 Main Projects" },
-    { label: "🛠️ Tech Stack", query: "🛠️ Tech Stack" },
-    { label: "☀️ Light / 🌙 Dark Mode", query: "☀️ Light / 🌙 Dark Mode" },
+    { label: "💼 Work Experience", targetId: "sec-experience", query: "💼 Work Experience" },
+    { label: "🚀 Main Projects", targetId: "sec-projects", query: "🚀 Main Projects" },
+    { label: "🛠️ Tech Stack", targetId: "sec-techstack", query: "🛠️ Tech Stack" },
+    { label: "☀️ Light / 🌙 Dark Mode", targetId: "theme-toggle", query: "☀️ Light / 🌙 Dark Mode" },
   ];
 
   return (
     <div className={`w-full h-screen flex flex-col overflow-hidden bg-background text-foreground font-mono ${theme === "dark" ? "theme-matrix-dark dark" : "theme-matrix-light"}`}>
-      {/* Header Bar */}
-      <header className="h-16 border-b border-border/40 bg-background/80 backdrop-blur-md px-6 flex items-center justify-between z-20 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold shadow-lg shadow-emerald-500/10">
-            <Terminal size={18} />
+      {/* Super Slim Header Bar (44px height) */}
+      <header className="h-11 border-b border-border/40 bg-background/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20 shrink-0">
+        <div className="flex items-center gap-2.5">
+          {/* ASCII Avatar Logo in Navbar */}
+          <div className="w-6 h-6 rounded-md overflow-hidden border border-primary/40 bg-black flex items-center justify-center">
+            <AsciiArt
+              src="https://assets.aceternity.com/avatars/manu.webp"
+              resolution={25}
+              color="var(--primary)"
+              animated={false}
+              animationStyle="none"
+              animateOnView={false}
+              className="w-full h-full scale-125"
+            />
           </div>
-          <div>
-            <h1 className="font-bold text-base tracking-tight flex items-center gap-2">
-              Bhavish<span className="text-emerald-400 font-extrabold">.ai</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                Hybrid Console v1.0
-              </span>
+          <div className="flex items-center gap-2">
+            <h1 className="font-bold text-sm tracking-tight flex items-center gap-1.5">
+              Bhavish<span className="text-primary font-extrabold">.ai</span>
             </h1>
-            <p className="text-[11px] text-neutral-400">0ms Deterministic Interceptor Active</p>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary hidden sm:inline-block">
+              Digital Clone v1.0
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted border border-border/50 text-xs font-mono text-foreground hover:border-emerald-500/50 transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border/50 text-[11px] font-mono text-foreground hover:border-primary/50 transition-all"
             title="Toggle theme mode"
           >
-            <Palette size={13} className="text-emerald-500" />
-            <span>Mode: MATRIX {theme.toUpperCase()}</span>
+            <Palette size={12} className="text-primary" />
+            <span>MODE: MATRIX {theme.toUpperCase()}</span>
           </button>
           <button
             onClick={resetChat}
-            className="p-2 rounded-full hover:bg-neutral-900 text-neutral-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             title="Reset Conversation"
           >
-            <RefreshCw size={16} />
+            <RefreshCw size={14} />
           </button>
         </div>
       </header>
 
-      {/* Messages Stream Window */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-4xl mx-auto w-full">
-        <AnimatePresence initial={false}>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              {msg.role === "assistant" && (
-                <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-1">
-                  <Bot size={16} />
-                </div>
-              )}
+      {/* Main Workspace (Sidebar + Central Chat Area) */}
+      <div className="flex-1 flex overflow-hidden w-full relative">
+        {/* Desktop Sidebar Quick Action Dock */}
+        <aside className="hidden md:flex flex-col w-60 border-r border-border bg-card/30 p-3 shrink-0 justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-border/40">
+              <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase flex items-center gap-1.5">
+                <Zap size={12} className="text-primary" />
+                Quick Navigation
+              </span>
+            </div>
 
-              <div className={`max-w-[85%] sm:max-w-[75%] space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                {/* Text Content */}
-                {msg.text && (
-                  <div
-                    className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === "user"
-                        ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
-                        : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                )}
+            <div className="space-y-1.5">
+              {promptChips.map((chip) => (
+                <button
+                  key={chip.label}
+                  onClick={() => scrollToSection(chip.targetId, chip.query)}
+                  className="w-full text-left px-3 py-2.5 rounded-xl bg-muted/40 hover:bg-primary/15 border border-border/50 hover:border-primary/40 text-xs font-semibold text-foreground transition-all duration-200 flex items-center justify-between group shadow-sm"
+                >
+                  <span className="truncate">{chip.label}</span>
+                  <ArrowRight size={12} className="opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-primary shrink-0" />
+                </button>
+              ))}
+            </div>
+          </div>
 
-                {/* Render Hardcoded Visual Widgets */}
-                {msg.widget === "work-experience" && <WorkExperienceWidget />}
-                {msg.widget === "main-projects" && <ProjectsWidget />}
-                {msg.widget === "tech-stack" && <TechStackWidget />}
-                {msg.widget === "theme-feedback" && (
-                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/30 text-xs font-mono text-foreground font-semibold">
-                    ✨ Applied {theme.toUpperCase()} theme tokens to root CSS state.
-                  </div>
-                )}
+          {/* Sidebar Status Footer */}
+          <div className="p-3 rounded-xl bg-muted/30 border border-border/40 space-y-1.5 text-[10px] font-mono text-muted-foreground">
+            <div className="flex items-center justify-between text-foreground font-bold">
+              <span className="flex items-center gap-1">
+                <Layers size={11} className="text-primary" /> Architecture
+              </span>
+              <span className="text-primary font-mono text-[9px]">Digital Clone Active</span>
+            </div>
+            <p className="leading-tight text-[10px] text-muted-foreground">
+              Direct conversational AI intent routing & 0ms pre-populated widgets.
+            </p>
+          </div>
+        </aside>
 
-                {/* Guided Journey Suggestion Prompt */}
-                {msg.suggestion && (
-                  <div className="inline-flex items-center gap-1.5 p-2.5 rounded-xl bg-muted border border-border text-xs text-muted-foreground font-mono">
-                    <Sparkles size={13} className="text-primary shrink-0 animate-pulse" />
-                    <span>{msg.suggestion}</span>
-                  </div>
-                )}
+        {/* Central Chat Console Area */}
+        <main className="flex-1 flex flex-col h-full min-w-0 bg-background relative">
+          {/* Message Stream */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-5 max-w-4xl mx-auto w-full scroll-smooth">
+            {/* Pinned Digital Clone Hero Card */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-card border border-border flex flex-col sm:flex-row items-center gap-5 shadow-sm text-center sm:text-left mb-4">
+              {/* ASCII Art Avatar Hero Container */}
+              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 shrink-0 bg-black flex items-center justify-center">
+                <AsciiArt
+                  src="https://assets.aceternity.com/avatars/manu.webp"
+                  resolution={55}
+                  color="var(--primary)"
+                  animationStyle="fade"
+                  animationDuration={1.2}
+                  animateOnView={false}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
-              {msg.role === "user" && (
-                <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-foreground shrink-0 mt-1">
-                  <User size={16} />
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                  Digital Clone Online
                 </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+                  Hey, I&apos;m Bhavish 👋
+                </h2>
+                <p className="text-xs sm:text-sm font-bold text-primary">
+                  Full-Stack AI Engineer
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed pt-1 max-w-lg">
+                  Welcome to my interactive console! You&apos;re chatting directly with my digital clone. Ask me about my architecture choices, check out my work history, or demo my live projects below!
+                </p>
+              </div>
+            </div>
 
-        {/* Typing indicator */}
-        {isTyping && (
-          <div className="flex gap-3 justify-start items-center">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-              <Bot size={16} />
-            </div>
-            <div className="p-3 rounded-2xl bg-card border border-border text-xs font-mono text-foreground flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.4s]" />
-              <span className="ml-2 text-muted-foreground">Processing intent...</span>
-            </div>
+            {/* Pre-populated & Dynamic Conversation Stream */}
+            <AnimatePresence initial={false}>
+              {messages.map((msg) => (
+                <motion.div
+                  key={msg.id}
+                  id={msg.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className={`flex gap-2.5 pt-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  {msg.role === "assistant" && (
+                    <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 mt-0.5 flex items-center justify-center shadow-sm">
+                      <AsciiArt
+                        src="https://assets.aceternity.com/avatars/manu.webp"
+                        resolution={20}
+                        color="var(--primary)"
+                        animated={false}
+                        animationStyle="none"
+                        animateOnView={false}
+                        className="w-full h-full scale-125"
+                      />
+                    </div>
+                  )}
+
+                  <div className={`max-w-[90%] sm:max-w-[80%] space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                    {/* Text Content */}
+                    {msg.text && (
+                      <div
+                        className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
+                            : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                    )}
+
+                    {/* Render Hardcoded Visual Widgets */}
+                    {msg.widget === "work-experience" && <WorkExperienceWidget />}
+                    {msg.widget === "main-projects" && <ProjectsWidget />}
+                    {msg.widget === "tech-stack" && <TechStackWidget />}
+                    {msg.widget === "theme-feedback" && (
+                      <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/30 text-xs font-mono text-foreground font-semibold">
+                        ✨ Applied MATRIX {theme.toUpperCase()} theme tokens to root CSS state.
+                      </div>
+                    )}
+
+                    {/* Guided Journey Suggestion Prompt */}
+                    {msg.suggestion && (
+                      <div className="inline-flex items-center gap-1.5 p-2 rounded-xl bg-muted border border-border text-[11px] text-muted-foreground font-mono">
+                        <Sparkles size={12} className="text-primary shrink-0 animate-pulse" />
+                        <span>{msg.suggestion}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {msg.role === "user" && (
+                    <div className="w-7 h-7 rounded-full bg-muted border border-border flex items-center justify-center text-foreground shrink-0 mt-0.5">
+                      <User size={15} />
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Typing indicator */}
+            {isTyping && (
+              <div className="flex gap-2.5 justify-start items-center">
+                <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 flex items-center justify-center">
+                  <AsciiArt
+                    src="https://assets.aceternity.com/avatars/manu.webp"
+                    resolution={20}
+                    color="var(--primary)"
+                    animated={false}
+                    animationStyle="none"
+                    animateOnView={false}
+                    className="w-full h-full scale-125"
+                  />
+                </div>
+                <div className="p-2.5 rounded-2xl bg-card border border-border text-xs font-mono text-foreground flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.4s]" />
+                  <span className="ml-2 text-muted-foreground text-[11px]">Processing intent...</span>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
-        )}
 
-        <div ref={messagesEndRef} />
-      </div>
+          {/* Bottom Toolbar & Compact Input */}
+          <footer className="p-2.5 sm:p-3 border-t border-border/40 bg-background/95 backdrop-blur-md shrink-0 z-20">
+            <div className="max-w-4xl mx-auto space-y-2">
+              {/* Mobile Quick Actions (Shown ONLY on small screens) */}
+              <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                {promptChips.map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => scrollToSection(chip.targetId, chip.query)}
+                    className="px-2.5 py-1 rounded-full bg-muted border border-border text-[11px] font-semibold text-foreground shrink-0 flex items-center gap-1"
+                  >
+                    <span>{chip.label}</span>
+                  </button>
+                ))}
+              </div>
 
-      {/* Bottom Sticky Action Chips & Input Area */}
-      <footer className="p-4 border-t border-border/40 bg-background/90 backdrop-blur-md shrink-0 z-20">
-        <div className="max-w-4xl mx-auto space-y-3">
-          {/* Sticky Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            <span className="text-[11px] font-mono text-neutral-500 shrink-0 uppercase tracking-wider">
-              Quick Actions:
-            </span>
-            {promptChips.map((chip) => (
-              <button
-                key={chip.label}
-                onClick={() => handleSend(chip.query)}
-                className="px-3 py-1.5 rounded-full bg-muted hover:bg-primary/20 border border-border hover:border-primary text-xs font-semibold text-foreground shrink-0 transition-all duration-200 flex items-center gap-1 group shadow-sm"
+              {/* Form Input */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
+                className="flex items-center gap-2"
               >
-                <span>{chip.label}</span>
-                <ArrowRight size={11} className="opacity-60 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            ))}
-          </div>
-
-          {/* Form Input */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex items-center gap-2"
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything or click a quick action prompt chip..."
-              className="flex-1 bg-card border border-border focus:border-primary rounded-xl px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none transition-colors"
-            />
-            <Button
-              type="submit"
-              disabled={!input.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-5 py-3 shadow-lg shadow-primary/20 transition-all disabled:opacity-40"
-            >
-              <Send size={16} />
-            </Button>
-          </form>
-        </div>
-      </footer>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Talk to my digital clone or ask anything about my work..."
+                  className="flex-1 bg-card border border-border focus:border-primary rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-card-foreground placeholder:text-muted-foreground outline-none transition-colors"
+                />
+                <Button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-primary/20 transition-all disabled:opacity-40"
+                >
+                  <Send size={15} />
+                </Button>
+              </form>
+            </div>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }

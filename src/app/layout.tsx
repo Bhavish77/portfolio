@@ -30,9 +30,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${inter.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-violet-500/30 selection:text-violet-200">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-background text-foreground selection:bg-violet-500/30 selection:text-violet-200"
+      >
         {children}
       </body>
     </html>
