@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import { useState } from "react";
+import { playClickSound } from "@/utils/audio";
 
 interface ExperienceItem {
   id: string;
@@ -74,7 +75,10 @@ export default function WorkExperienceWidget() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative group cursor-pointer"
-              onClick={() => setExpandedId(isExpanded ? "" : item.id)}
+              onClick={() => {
+                playClickSound();
+                setExpandedId(isExpanded ? "" : item.id);
+              }}
             >
               {/* Glowing Node Dot */}
               <span

@@ -2,12 +2,16 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, Layers } from "lucide-react";
+import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, Layers, Volume2, VolumeX, Search } from "lucide-react";
 import WorkExperienceWidget from "./widgets/WorkExperienceWidget";
 import ProjectsWidget from "./widgets/ProjectsWidget";
 import TechStackWidget from "./widgets/TechStackWidget";
 import { Button } from "@/components/ui/button";
 import { AsciiArt } from "@/components/ui/ascii-art";
+import BootLoader from "./BootLoader";
+import CommandPalette from "./CommandPalette";
+import CyberBackground from "./CyberBackground";
+import { playClickSound, playToggleSound, toggleSound, isSoundEnabled } from "@/utils/audio";
 
 export type MessageRole = "user" | "assistant";
 export type WidgetType = "work-experience" | "main-projects" | "tech-stack" | "theme-feedback";
@@ -25,7 +29,21 @@ export default function ChatConsole() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Keyboard shortcut Ctrl+K / Cmd+K listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Pre-populated Traditional Portfolio Initial Stream
   const initialMessages: MessageItem[] = [
@@ -74,12 +92,31 @@ export default function ChatConsole() {
     }
   }, [messages, isTyping]);
 
+  // Command palette action handler
+  const handleCommandPaletteAction = (actionId: string) => {
+    if (actionId === "download-resume") {
+      alert("Downloading Bhavish's Resume PDF...");
+      return;
+    }
+    if (actionId === "contact-email") {
+      window.location.href = "mailto:bhavish@example.com";
+      return;
+    }
+    if (actionId === "reset-chat") {
+      resetChat();
+      return;
+    }
+    scrollToSection(actionId, actionId);
+  };
+
   // Smooth scroll handler for quick action dock
   const scrollToSection = (targetId: string, queryLabel: string) => {
-    // 1. Check if theme toggle
+    playClickSound();
+    // Check if theme toggle
     if (targetId === "theme-toggle") {
       const nextTheme = theme === "dark" ? "light" : "dark";
       setTheme(nextTheme);
+      playToggleSound();
 
       const assistantMessage: MessageItem = {
         id: `ast-${Date.now()}`,
@@ -92,12 +129,11 @@ export default function ChatConsole() {
       return;
     }
 
-    // 2. Try scrolling to existing pre-populated section
+    // Try scrolling to existing pre-populated section
     const el = document.getElementById(targetId);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      // Fallback if not found, send query to append
       handleSend(queryLabel);
     }
   };
@@ -107,6 +143,7 @@ export default function ChatConsole() {
     const query = (overrideQuery || input).trim();
     if (!query) return;
 
+    playClickSound();
     const userMessage: MessageItem = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -199,6 +236,7 @@ export default function ChatConsole() {
   };
 
   const resetChat = () => {
+    playClickSound();
     setMessages(initialMessages);
   };
 
@@ -210,7 +248,20 @@ export default function ChatConsole() {
   ];
 
   return (
-    <div className={`w-full h-screen flex flex-col overflow-hidden bg-background text-foreground font-mono ${theme === "dark" ? "theme-matrix-dark dark" : "theme-matrix-light"}`}>
+    <div className={`w-full h-screen flex flex-col overflow-hidden bg-background text-foreground font-mono relative ${theme === "dark" ? "theme-matrix-dark dark" : "theme-matrix-light"}`}>
+      {/* 1. Terminal Boot Loader Screen */}
+      <BootLoader />
+
+      {/* 2. Cyber Ambient Canvas Overlay */}
+      <CyberBackground />
+
+      {/* 3. Command Palette Modal */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onSelectAction={handleCommandPaletteAction}
+      />
+
       {/* Super Slim Header Bar (44px height) */}
       <header className="h-11 border-b border-border/40 bg-background/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20 shrink-0">
         <div className="flex items-center gap-2.5">
@@ -236,15 +287,51 @@ export default function ChatConsole() {
           </div>
         </div>
 
+        {/* Navbar Controls */}
         <div className="flex items-center gap-2">
+          {/* Cmd + K Command Palette Button */}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => {
+              playClickSound();
+              setCommandPaletteOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border/50 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+            title="Open Command Palette (Ctrl+K)"
+          >
+            <Search size={12} className="text-primary" />
+            <span className="hidden sm:inline">Search</span>
+            <kbd className="text-[9px] px-1 py-0.2 rounded bg-background border border-border text-primary font-bold">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Sound Toggle */}
+          <button
+            onClick={() => {
+              const state = toggleSound();
+              setSoundOn(state);
+            }}
+            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title={soundOn ? "Mute Sci-Fi Audio" : "Unmute Sci-Fi Audio"}
+          >
+            {soundOn ? <Volume2 size={15} className="text-primary" /> : <VolumeX size={15} />}
+          </button>
+
+          {/* Theme Mode Toggle */}
+          <button
+            onClick={() => {
+              const nextTheme = theme === "dark" ? "light" : "dark";
+              setTheme(nextTheme);
+              playToggleSound();
+            }}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border/50 text-[11px] font-mono text-foreground hover:border-primary/50 transition-all"
             title="Toggle theme mode"
           >
             <Palette size={12} className="text-primary" />
             <span>MODE: MATRIX {theme.toUpperCase()}</span>
           </button>
+
+          {/* Reset Chat */}
           <button
             onClick={resetChat}
             className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
@@ -256,9 +343,9 @@ export default function ChatConsole() {
       </header>
 
       {/* Main Workspace (Sidebar + Central Chat Area) */}
-      <div className="flex-1 flex overflow-hidden w-full relative">
+      <div className="flex-1 flex overflow-hidden w-full relative z-10">
         {/* Desktop Sidebar Quick Action Dock */}
-        <aside className="hidden md:flex flex-col w-60 border-r border-border bg-card/30 p-3 shrink-0 justify-between">
+        <aside className="hidden md:flex flex-col w-60 border-r border-border bg-card/30 p-3 shrink-0 justify-between backdrop-blur-sm">
           <div className="space-y-3">
             <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-border/40">
               <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase flex items-center gap-1.5">
@@ -428,7 +515,7 @@ export default function ChatConsole() {
           {/* Bottom Toolbar & Compact Input */}
           <footer className="p-2.5 sm:p-3 border-t border-border/40 bg-background/95 backdrop-blur-md shrink-0 z-20">
             <div className="max-w-4xl mx-auto space-y-2">
-              {/* Mobile Quick Actions (Shown ONLY on small screens) */}
+              {/* Mobile Quick Actions */}
               <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                 {promptChips.map((chip) => (
                   <button
