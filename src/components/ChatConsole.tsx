@@ -549,10 +549,10 @@ export default function ChatConsole() {
                     {msg.text && (
                       <div
                         className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${msg.isError
-                            ? "bg-[#fee2e2] dark:bg-[#1a0505] text-red-950 dark:text-red-200 border border-red-500/60 rounded-tl-none font-mono shadow-lg shadow-red-500/20"
-                            : msg.role === "user"
-                              ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
-                              : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
+                          ? "bg-[#fee2e2] dark:bg-[#1a0505] text-red-950 dark:text-red-200 border border-red-500/60 rounded-tl-none font-mono shadow-lg shadow-red-500/20"
+                          : msg.role === "user"
+                            ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
+                            : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
                           }`}
                       >
                         {msg.isError && (

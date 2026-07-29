@@ -58,7 +58,7 @@ export default function BootLoader() {
               <h1 className="font-bold text-lg tracking-tight text-white flex items-center gap-2">
                 Bhavish<span className="text-[#00ffb3]">.ai</span>
               </h1>
-              <p className="text-xs text-[#00ffb3]/70">Hybrid AI Agent Workstation</p>
+              <p className="text-xs text-[#00ffb3]/70">Autonomous Digital Clone Console</p>
             </div>
           </div>
 

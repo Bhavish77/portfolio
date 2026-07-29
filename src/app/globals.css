@@ -187,3 +187,15 @@
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.556 0 0);
 }
+
+/* Custom Cyber Matrix Text Selection Highlight */
+::selection {
+  background-color: rgba(0, 255, 179, 0.35);
+  color: #00ffb3;
+}
+
+.theme-matrix-light ::selection,
+.theme-matrix-light *::selection {
+  background-color: rgba(5, 150, 105, 0.25);
+  color: #042f22;
+}
