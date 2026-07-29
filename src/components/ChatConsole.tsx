@@ -238,12 +238,23 @@ export default function ChatConsole() {
         ],
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(async (res) => {
+        const contentType = res.headers.get("content-type") || "";
+        let textResponse = "";
+
+        if (contentType.includes("application/json")) {
+          const data = await res.json();
+          textResponse = data.text || data.error || "";
+        } else {
+          textResponse = await res.text();
+          // Clean up stream chunk formatting if present
+          textResponse = textResponse.replace(/^0:"/g, "").replace(/"$/g, "").replace(/\\n/g, "\n");
+        }
+
         const assistantMessage: MessageItem = {
           id: `ast-${Date.now()}`,
           role: "assistant",
-          text: data.text || "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
+          text: textResponse || "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
           suggestion: "Ask me about my VS Code extension, Playwright tooltip, or AI voice platform Resonance!",
           timestamp: new Date(),
         };

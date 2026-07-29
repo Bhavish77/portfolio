@@ -9,18 +9,30 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
 
-    // If Gemini API Key is configured, stream real-time LLM inference
+    console.log("=== CHAT API INVOCATION ===");
+    console.log("API Key present:", Boolean(apiKey));
+
+    // Filter out internal system/widget messages for LLM context
+    const formattedMessages = messages
+      .filter((m: { role: string; content?: string }) => m.content && m.content.trim())
+      .map((m: { role: string; content: string }) => ({
+        role: m.role === "user" ? "user" : "assistant",
+        content: m.content,
+      }));
+
     if (apiKey) {
+      console.log("Streaming real-time LLM response via Gemini 2.5 Flash...");
       const result = streamText({
-        model: google("gemini-1.5-flash"),
+        model: google("gemini-2.5-flash"),
         system: DIGITAL_CLONE_SYSTEM_PROMPT,
-        messages,
+        messages: formattedMessages,
       });
       return result.toTextStreamResponse();
     }
 
-    // High-fidelity fallback Digital Clone inference engine (when API key is pending)
-    const lastUserMsg = messages[messages.length - 1]?.content || "";
+    // High-fidelity fallback Digital Clone inference engine (when API key is not present)
+    console.log("Using Fallback Engine...");
+    const lastUserMsg = formattedMessages[formattedMessages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
 
     let responseText = "I'm Bhavish! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.";

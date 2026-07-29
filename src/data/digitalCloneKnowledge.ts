@@ -35,7 +35,7 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
     badge: "Full-Time",
     location: "Remote / India",
     highlights: [
-      "Engineered company VS Code Extension for mobile app testing with custom cookie-less token storage & auto-refresh mechanisms.",
+      "Engineered company VS Code Extension for mobile app testing with custom token storage & auto-refresh mechanisms.",
       "Built real-time low-latency WebSocket & ADB web UI stream for remote Android & iOS devices with interactive touch gesture relay (BrowserStack competitor).",
       "Built custom on-device gRPC server & SSE backend pipeline, extracting Android UI tree data to render a custom interactive Mobile UI Inspector for Maestro code generation.",
       "Integrated Appium Inspector via proxy and added vision AI agents generating Appium test scripts automatically.",
