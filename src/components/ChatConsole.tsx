@@ -472,12 +472,12 @@ export default function ChatConsole() {
           <div className="p-3.5 rounded-2xl bg-card border border-border space-y-1.5 text-[10px] font-mono text-muted-foreground shadow-sm">
             <div className="flex items-center justify-between text-foreground font-bold">
               <span className="flex items-center gap-1">
-                <Layers size={11} className="text-primary" /> Architecture
+                <Zap size={11} className="text-primary" /> Bhavish.ai v1.0
               </span>
-              <span className="text-primary font-mono text-[9px] font-bold">Digital Clone Active</span>
+              <span className="text-primary font-mono text-[9px] font-bold">Online</span>
             </div>
             <p className="leading-tight text-[10px] text-muted-foreground">
-              Direct conversational AI intent routing & 0ms pre-populated widgets.
+              Interactive 1st-person AI clone loaded with authentic career history &amp; live project demos.
             </p>
           </div>
         </aside>
