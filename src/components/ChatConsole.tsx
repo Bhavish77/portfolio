@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, Layers, Volume2, VolumeX, Search } from "lucide-react";
+import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, ZapOff, Layers, Volume2, VolumeX, Search } from "lucide-react";
 import WorkExperienceWidget from "./widgets/WorkExperienceWidget";
 import ProjectsWidget from "./widgets/ProjectsWidget";
 import TechStackWidget from "./widgets/TechStackWidget";
@@ -22,6 +22,7 @@ export interface MessageItem {
   text?: string;
   widget?: WidgetType;
   suggestion?: string;
+  isError?: boolean;
   timestamp: Date;
 }
 
@@ -56,7 +57,7 @@ export default function ChatConsole() {
     {
       id: "sec-experience",
       role: "assistant",
-      text: "💼 Over the past 3+ years, I've architected multi-agent RAG pipelines and built full-stack production apps. Here is my career timeline:",
+      text: "💼 Over the past 2+ years, I've built vision-based AI agents, mobile device farm streaming architectures, desktop Electron apps, and full-stack production SaaS platforms. Here is my career timeline:",
       widget: "work-experience",
       timestamp: new Date("2026-01-01T00:00:00Z"),
     },
@@ -245,6 +246,19 @@ export default function ChatConsole() {
       if (contentType.includes("application/json")) {
         setIsTyping(false);
         const data = await response.json();
+
+        if (response.status === 429 || data.isQuotaError) {
+          const errorMsg: MessageItem = {
+            id: `ast-${Date.now()}`,
+            role: "assistant",
+            text: data.error || "⚡ Oof! Digital Clone Overheat (Rate Limit Hit)!\n\nMy neural GPU context hit Google's free-tier rate limit! I'm taking a 45-second power nap to cool down my processors 🧠⚡\n\nIn the meantime, click any of the 0ms quick chips to explore my work experience, projects, or stack!",
+            isError: true,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, errorMsg]);
+          return;
+        }
+
         const assistantMessage: MessageItem = {
           id: `ast-${Date.now()}`,
           role: "assistant",
@@ -295,12 +309,26 @@ export default function ChatConsole() {
           );
         }
       }
+
+      // Fail-safe: If stream closed without emitting tokens (e.g. rate limit error), render creative error bubble
+      setIsTyping(false);
+      if (!hasStartedStreaming || !accumulatedText.trim()) {
+        const fallbackMsg: MessageItem = {
+          id: `ast-${Date.now()}`,
+          role: "assistant",
+          text: "⚡ Oof! Digital Clone Overheat (Rate Limit Hit)!\n\nMy neural GPU context hit Google's free-tier rate limit! I'm taking a 45-second power nap to cool down my processors 🧠⚡\n\nIn the meantime, click any of the 0ms quick chips to explore my work experience, projects, or stack!",
+          isError: true,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, fallbackMsg]);
+      }
     } catch {
       setIsTyping(false);
       const assistantMessage: MessageItem = {
         id: `ast-${Date.now()}`,
         role: "assistant",
-        text: "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
+        text: "⚡ Oof! Digital Clone Overheat (Rate Limit Hit)!\n\nMy neural GPU context hit Google's free-tier rate limit! I'm taking a 45-second power nap to cool down my processors 🧠⚡\n\nIn the meantime, click any of the 0ms quick chips to explore my work experience, projects, or stack!",
+        isError: true,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -520,12 +548,19 @@ export default function ChatConsole() {
                     {/* Text Content */}
                     {msg.text && (
                       <div
-                        className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
-                          msg.role === "user"
-                            ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
-                            : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
-                        }`}
+                        className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${msg.isError
+                            ? "bg-[#fee2e2] dark:bg-[#1a0505] text-red-950 dark:text-red-200 border border-red-500/60 rounded-tl-none font-mono shadow-lg shadow-red-500/20"
+                            : msg.role === "user"
+                              ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
+                              : "bg-card text-card-foreground border border-border rounded-tl-none shadow-sm"
+                          }`}
                       >
+                        {msg.isError && (
+                          <div className="flex items-center gap-1.5 font-bold text-red-600 dark:text-red-400 mb-1.5 text-xs">
+                            <ZapOff size={14} />
+                            <span>DIGITAL CLONE SYSTEM OVERHEAT</span>
+                          </div>
+                        )}
                         {msg.text}
                       </div>
                     )}

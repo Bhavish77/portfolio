@@ -6,6 +6,7 @@ export interface ExperienceData {
   period: string;
   badge: string;
   location: string;
+  award?: string;
   highlights: string[];
   skills: string[];
 }
@@ -29,11 +30,12 @@ export const BHAVISH_EDUCATION = {
 
 export const BHAVISH_EXPERIENCE: ExperienceData[] = [
   {
-    company: "NativeBridge (ProductHunt #3 Product of the Day)",
+    company: "NativeBridge",
     role: "Full-Stack Software Engineer",
     period: "Apr 2025 - Present",
     badge: "Full-Time",
     location: "Remote / India",
+    award: "🏆 ProductHunt #3 Product of the Day",
     highlights: [
       "Engineered company VS Code Extension for mobile app testing with custom token storage & auto-refresh mechanisms.",
       "Built real-time low-latency WebSocket & ADB web UI stream for remote Android & iOS devices with interactive touch gesture relay (BrowserStack competitor).",
@@ -44,11 +46,12 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
     skills: ["React", "Electron.js", "MobX", "WebSockets", "SSE", "gRPC", "Python", "FastAPI", "Docker", "ADB", "Appium", "Maestro", "Claude API"],
   },
   {
-    company: "AutoFlow (ProductHunt #1 Product of the Day)",
+    company: "AutoFlow",
     role: "Software Engineer",
     period: "Sep 2024 - Apr 2025",
     badge: "Full-Time",
     location: "Remote / India",
+    award: "🏆 ProductHunt #1 Product of the Day",
     highlights: [
       "Architected autonomous vision-agentic UI testing pipeline combining multimodal LLMs with visual grounding, generating Playwright code step-by-step from natural language prompts.",
       "Designed Shadow DOM locator generation algorithms and modal UI for complex multi-locator statement editing.",
@@ -101,9 +104,9 @@ export const BHAVISH_PROJECTS: ProjectData[] = [
     awardBadge: "🏆 ProductHunt #3 Product of the Day",
   },
   {
-    title: "Healenium-Inspired Self-Healing Test Proxy",
+    title: "Self-Healing Tests",
     category: "SYSTEMS / ALGORITHMS",
-    stars: 96,
+    stars: 0,
     description: "Automated testing proxy capturing Appium findElements calls. Records passing locator snapshots on initial runs and uses DOM tree similarity search algorithms to automatically recover broken locators on test failures.",
     tags: ["Python", "FastAPI", "Appium", "Proxy", "Similarity Search"],
     isProprietary: true,
@@ -143,9 +146,12 @@ You are the AI Digital Clone of Bhavish, a Full-Stack & AI Systems Engineer hold
    - GCP server setup (VM instances, Nginx reverse proxy, SSL certs).
    - Tech Stack: React, Next.js, TypeScript, Electron.js, MobX, Python, FastAPI, Docker, PostgreSQL, MongoDB, WebSockets, SSE, gRPC, Playwright, Appium, Maestro, Claude API, Vercel AI SDK.
    - Currently deep-diving into LangChain & LangGraph for multi-agent RAG pipelines (e.g. Talk-to-PDF apps).
+7. **Personal Interests, Hobbies & Gaming**:
+   - **Hobbies**: Gym, outdoor cycling, and sports bikes 🏍️.
+   - **PC Gaming**: Passionate PC gamer! All-time favorite games include **Subnautica**, **Skyrim**, **Fallout**, **Prototype**, and immersive action/exploration RPGs.
 
 ### Instructions:
 - Answer questions naturally in 1st-person ("I").
 - Keep responses concise, clear, and structured with markdown bullet points when explaining architecture or achievements.
-- Include personal anecdotes (like winning ProductHunt #1 & #3, the 1-week VS Code extension, or Playwright tooltip client praise) naturally when visitors ask about your experience or favorite projects.
+- If asked about hobbies, gaming, bikes, or life outside coding, enthusiastically share your love for gym workouts, cycling, sports bikes, and your favorite PC games (Subnautica, Skyrim, Fallout, Prototype)!
 `;

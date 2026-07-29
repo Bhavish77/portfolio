@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Calendar, ChevronRight, MapPin } from "lucide-react";
+import { Calendar, ChevronRight, MapPin, Trophy } from "lucide-react";
 import { useState } from "react";
 import { playClickSound } from "@/utils/audio";
 import { BHAVISH_EXPERIENCE, BHAVISH_EDUCATION } from "@/data/digitalCloneKnowledge";
@@ -17,7 +17,7 @@ export default function WorkExperienceWidget() {
           <span className="text-primary font-bold">🎓 Education:</span>
           <span className="text-card-foreground font-semibold">{BHAVISH_EDUCATION.degree}</span>
         </div>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold">
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold whitespace-nowrap">
           Class of {BHAVISH_EDUCATION.year}
         </span>
       </div>
@@ -28,7 +28,7 @@ export default function WorkExperienceWidget() {
           const isExpanded = expandedId === String(idx);
           return (
             <motion.div
-              key={item.company}
+              key={item.company + idx}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative group cursor-pointer"
@@ -39,7 +39,7 @@ export default function WorkExperienceWidget() {
             >
               {/* Glowing Node Dot */}
               <span
-                className={`absolute -left-[23px] sm:-left-[27px] top-2.5 w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
+                className={`absolute -left-[23px] sm:-left-[27px] top-3.5 w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
                   isExpanded
                     ? "bg-primary border-primary scale-125 shadow-md shadow-primary/60"
                     : "bg-background border-border group-hover:border-primary"
@@ -54,34 +54,45 @@ export default function WorkExperienceWidget() {
                     : "bg-card/80 border-border hover:border-primary/30"
                 }`}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-card-foreground flex flex-wrap items-center gap-2">
-                      {item.role}
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/15 border border-primary/30 text-primary font-bold">
+                <div className="space-y-1.5">
+                  {/* Top Line: Role Title + Badge + Chevron */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-card-foreground">
+                        {item.role}
+                      </h4>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/15 border border-primary/30 text-primary font-bold whitespace-nowrap">
                         {item.badge}
                       </span>
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-medium mt-1 flex items-center gap-2">
-                      <span className="font-semibold text-foreground">{item.company}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <MapPin size={10} />
-                        {item.location}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1 sm:mt-0">
-                    <span className="text-[11px] font-mono text-muted-foreground flex items-center gap-1">
-                      <Calendar size={11} className="text-primary" />
-                      {item.period}
-                    </span>
+                      {item.award && (
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/40 text-amber-800 dark:text-amber-400 flex items-center gap-1 whitespace-nowrap">
+                          <Trophy size={10} className="text-amber-600 dark:text-amber-400" />
+                          {item.award.replace("🏆 ", "")}
+                        </span>
+                      )}
+                    </div>
+
                     <ChevronRight
-                      size={15}
-                      className={`text-primary transition-transform duration-300 ${
+                      size={16}
+                      className={`text-primary shrink-0 transition-transform duration-300 ${
                         isExpanded ? "rotate-90" : ""
                       }`}
                     />
+                  </div>
+
+                  {/* Metadata Row: Company + Location + Date */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-muted-foreground pt-0.5">
+                    <span className="font-bold text-foreground whitespace-nowrap">{item.company}</span>
+                    <span className="text-border hidden sm:inline">•</span>
+                    <span className="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
+                      <MapPin size={11} className="text-primary shrink-0" />
+                      {item.location}
+                    </span>
+                    <span className="text-border hidden sm:inline">•</span>
+                    <span className="flex items-center gap-1 text-muted-foreground whitespace-nowrap sm:ml-auto">
+                      <Calendar size={11} className="text-primary shrink-0" />
+                      {item.period}
+                    </span>
                   </div>
                 </div>
 

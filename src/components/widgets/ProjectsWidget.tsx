@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ExternalLink, Github, Lock, Star, Trophy } from "lucide-react";
+import { ExternalLink, Github, Lock, Trophy } from "lucide-react";
 import { playClickSound } from "@/utils/audio";
 import { BHAVISH_PROJECTS } from "@/data/digitalCloneKnowledge";
 
@@ -66,16 +66,11 @@ export default function ProjectsWidget() {
                   <span className="text-[10px] font-bold text-primary tracking-wider uppercase">
                     {project.category}
                   </span>
-                  {project.awardBadge ? (
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center gap-1 shrink-0">
-                      <Trophy size={10} />
+                  {project.awardBadge && (
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/40 text-amber-800 dark:text-amber-400 flex items-center gap-1 shrink-0">
+                      <Trophy size={10} className="text-amber-600 dark:text-amber-400" />
                       {project.awardBadge.replace("🏆 ", "")}
                     </span>
-                  ) : (
-                    <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border">
-                      <Star size={11} className="text-amber-400 fill-amber-400" />
-                      <span>{project.stars}</span>
-                    </div>
                   )}
                 </div>
 

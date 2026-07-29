@@ -1,5 +1,5 @@
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { streamText, generateText } from "ai";
 import { DIGITAL_CLONE_SYSTEM_PROMPT } from "@/data/digitalCloneKnowledge";
 
 export const maxDuration = 30;
@@ -10,27 +10,88 @@ export async function POST(req: Request) {
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
 
     console.log("=== CHAT API INVOCATION ===");
-    console.log("API Key present:", Boolean(apiKey));
 
-    // Filter out internal system/widget messages for LLM context
-    const formattedMessages = messages
-      .filter((m: { role: string; content?: string }) => m.content && m.content.trim())
-      .map((m: { role: string; content: string }) => ({
+    // 1. Filter out heavy widget placeholders & non-conversational items
+    const rawFiltered = messages.filter(
+      (m: { role: string; content?: string }) =>
+        m.content &&
+        m.content.trim() &&
+        !m.content.startsWith("Rendered ") &&
+        !m.content.startsWith("Here is a breakdown") &&
+        !m.content.startsWith("Here are my featured") &&
+        !m.content.startsWith("Here is my architecture")
+    );
+
+    const CHUNK_SIZE = 10;
+    let formattedMessages: { role: "user" | "assistant"; content: string }[] = [];
+
+    if (rawFiltered.length <= CHUNK_SIZE) {
+      formattedMessages = rawFiltered.map((m: { role: string; content: string }) => ({
+        role: m.role === "user" ? "user" : "assistant",
+        content: m.content,
+      }));
+    } else {
+      const completedChunksCount = Math.floor((rawFiltered.length - 1) / CHUNK_SIZE);
+      const toSummarize = rawFiltered.slice(0, completedChunksCount * CHUNK_SIZE);
+      const freshRecent = rawFiltered.slice(completedChunksCount * CHUNK_SIZE);
+
+      let summaryText = "";
+
+      if (apiKey) {
+        try {
+          console.log(`Generating LLM Batch Summary for ${toSummarize.length} completed messages...`);
+          const summaryResult = await generateText({
+            model: google("gemini-2.5-flash"),
+            system: "Summarize the user's questions and Bhavish's answers in 1-2 concise sentences.",
+            prompt: toSummarize.map((m: { role: string; content: string }) => `${m.role === "user" ? "User" : "Bhavish"}: ${m.content}`).join("\n"),
+          });
+          summaryText = summaryResult.text.trim();
+        } catch (llmErr) {
+          console.warn("LLM Summary Error (quota/rate-limit), using fallback compression:", llmErr);
+          summaryText = toSummarize.map((m: { role: string; content: string }) => `${m.role}: ${m.content.substring(0, 60)}`).join(" | ");
+        }
+      } else {
+        summaryText = toSummarize.map((m: { role: string; content: string }) => `${m.role}: ${m.content.substring(0, 60)}`).join(" | ");
+      }
+
+      const memorySummaryMessage = {
+        role: "assistant" as const,
+        content: `[Context Memory Summary of Turns 1..${toSummarize.length}: ${summaryText}]`,
+      };
+
+      const freshFormatted = freshRecent.map((m: { role: string; content: string }) => ({
         role: m.role === "user" ? "user" : "assistant",
         content: m.content,
       }));
 
-    if (apiKey) {
-      console.log("Streaming real-time LLM response via Gemini 2.5 Flash...");
-      const result = streamText({
-        model: google("gemini-2.5-flash"),
-        system: DIGITAL_CLONE_SYSTEM_PROMPT,
-        messages: formattedMessages,
-      });
-      return result.toTextStreamResponse();
+      formattedMessages = [memorySummaryMessage, ...freshFormatted];
     }
 
-    // High-fidelity fallback Digital Clone inference engine (when API key is not present)
+    if (apiKey) {
+      try {
+        console.log("Streaming real-time LLM response via Gemini 2.5 Flash...");
+        const result = streamText({
+          model: google("gemini-2.5-flash"),
+          system: DIGITAL_CLONE_SYSTEM_PROMPT,
+          messages: formattedMessages,
+        });
+        return result.toTextStreamResponse();
+      } catch (streamErr) {
+        console.warn("Gemini Stream Error (Quota 429), returning creative overheat response:", streamErr);
+        return new Response(
+          JSON.stringify({
+            error: "⚡ Oof! Digital Clone Overheat (Rate Limit Hit)!\n\nMy neural GPU context hit Google's free-tier rate limit! I'm taking a 45-second power nap to cool down my processors 🧠⚡\n\nIn the meantime, click any of the 0ms quick chips to explore my work experience, projects, or stack!",
+            isQuotaError: true,
+          }),
+          {
+            status: 429,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
+
+    // High-fidelity fallback Digital Clone inference engine (when API key is absent)
     console.log("Using Fallback Engine...");
     const lastUserMsg = formattedMessages[formattedMessages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
@@ -56,9 +117,15 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Chat API error:", error);
-    return new Response(JSON.stringify({ error: "Failed to process chat query" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        error: "⚡ Oof! Digital Clone Overheat (Rate Limit Hit)!\n\nMy neural GPU context hit Google's free-tier rate limit! I'm taking a 45-second power nap to cool down my processors 🧠⚡\n\nIn the meantime, click any of the 0ms quick chips to explore my work experience, projects, or stack!",
+        isQuotaError: true,
+      }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }
