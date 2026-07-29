@@ -155,19 +155,16 @@ export default function ChatConsole() {
     if (!overrideQuery) setInput("");
     setIsTyping(true);
 
-    // Simulate 0ms/fast response processing
-    setTimeout(() => {
-      processQuery(query);
-      setIsTyping(false);
-    }, 250);
+    processQuery(query);
   };
 
-  // Deterministic Router Path A
-  const processQuery = (query: string) => {
+  // Deterministic Router Path A vs Conversational AI Path B
+  const processQuery = async (query: string) => {
     const q = query.toLowerCase();
 
     // 1. Work Experience Intent
     if (q.includes("work experience") || q.includes("experience") || q.includes("💼")) {
+      setIsTyping(false);
       const assistantMessage: MessageItem = {
         id: `ast-${Date.now()}`,
         role: "assistant",
@@ -182,6 +179,7 @@ export default function ChatConsole() {
 
     // 2. Main Projects Intent
     if (q.includes("main projects") || q.includes("projects") || q.includes("🚀")) {
+      setIsTyping(false);
       const assistantMessage: MessageItem = {
         id: `ast-${Date.now()}`,
         role: "assistant",
@@ -196,6 +194,7 @@ export default function ChatConsole() {
 
     // 3. Tech Stack Intent
     if (q.includes("tech stack") || q.includes("skills") || q.includes("🛠️")) {
+      setIsTyping(false);
       const assistantMessage: MessageItem = {
         id: `ast-${Date.now()}`,
         role: "assistant",
@@ -210,6 +209,7 @@ export default function ChatConsole() {
 
     // 4. Matrix Theme / Mode Toggle Intent
     if (q.includes("theme") || q.includes("mode") || q.includes("light") || q.includes("dark") || q.includes("🎨") || q.includes("☀️")) {
+      setIsTyping(false);
       const nextTheme = theme === "dark" ? "light" : "dark";
       setTheme(nextTheme);
 
@@ -224,51 +224,87 @@ export default function ChatConsole() {
       return;
     }
 
-    // 5. Conversational Path B -> Call Digital Clone AI Engine (/api/chat)
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: [
-          ...messages.map((m) => ({
-            role: m.role,
-            content: m.text || (m.widget ? `Rendered ${m.widget} widget` : ""),
-          })),
-          { role: "user", content: query },
-        ],
-      }),
-    })
-      .then(async (res) => {
-        const contentType = res.headers.get("content-type") || "";
-        let textResponse = "";
-
-        if (contentType.includes("application/json")) {
-          const data = await res.json();
-          textResponse = data.text || data.error || "";
-        } else {
-          textResponse = await res.text();
-          // Clean up stream chunk formatting if present
-          textResponse = textResponse.replace(/^0:"/g, "").replace(/"$/g, "").replace(/\\n/g, "\n");
-        }
-
-        const assistantMessage: MessageItem = {
-          id: `ast-${Date.now()}`,
-          role: "assistant",
-          text: textResponse || "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
-          suggestion: "Ask me about my VS Code extension, Playwright tooltip, or AI voice platform Resonance!",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-      })
-      .catch(() => {
-        const assistantMessage: MessageItem = {
-          id: `ast-${Date.now()}`,
-          role: "assistant",
-          text: "I'm Bhavish! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
+    // 5. Conversational Path B -> Stream Real-Time LLM Tokens (/api/chat)
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map((m) => ({
+              role: m.role,
+              content: m.text || (m.widget ? `Rendered ${m.widget} widget` : ""),
+            })),
+            { role: "user", content: query },
+          ],
+        }),
       });
+
+      const contentType = response.headers.get("content-type") || "";
+
+      if (contentType.includes("application/json")) {
+        setIsTyping(false);
+        const data = await response.json();
+        const assistantMessage: MessageItem = {
+          id: `ast-${Date.now()}`,
+          role: "assistant",
+          text: data.text || data.error || "I'm Bhavish's Digital Clone! Ask me anything about my career.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        return;
+      }
+
+      // Stream text chunks in real-time token-by-token
+      if (!response.body) {
+        setIsTyping(false);
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      const assistantMsgId = `ast-${Date.now()}`;
+      let accumulatedText = "";
+      let hasStartedStreaming = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedText += chunk;
+
+        if (!hasStartedStreaming) {
+          hasStartedStreaming = true;
+          setIsTyping(false); // Hide thinking loader as first token arrives
+
+          // Create assistant message item
+          const initialMessage: MessageItem = {
+            id: assistantMsgId,
+            role: "assistant",
+            text: accumulatedText,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, initialMessage]);
+        } else {
+          // Update message text in real-time as tokens arrive
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId ? { ...msg, text: accumulatedText } : msg
+            )
+          );
+        }
+      }
+    } catch {
+      setIsTyping(false);
+      const assistantMessage: MessageItem = {
+        id: `ast-${Date.now()}`,
+        role: "assistant",
+        text: "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    }
   };
 
   const resetChat = () => {
