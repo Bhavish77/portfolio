@@ -4,80 +4,37 @@ import { motion } from "motion/react";
 import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import { useState } from "react";
 import { playClickSound } from "@/utils/audio";
-
-interface ExperienceItem {
-  id: string;
-  role: string;
-  company: string;
-  location: string;
-  period: string;
-  badge: string;
-  highlights: string[];
-  skills: string[];
-}
+import { BHAVISH_EXPERIENCE, BHAVISH_EDUCATION } from "@/data/digitalCloneKnowledge";
 
 export default function WorkExperienceWidget() {
-  const [expandedId, setExpandedId] = useState<string>("1");
-
-  const experiences: ExperienceItem[] = [
-    {
-      id: "1",
-      role: "Lead Full-Stack AI Engineer",
-      company: "TechResonance Labs",
-      location: "Remote / India",
-      period: "2024 - Present",
-      badge: "Current Role",
-      highlights: [
-        "Architected multi-agent RAG pipelines using Vercel AI SDK and Gemini 1.5 Flash, reducing chat latency by 45%.",
-        "Built dynamic deterministic bypass routers in Next.js 15, enabling 0ms latency responses for core portfolio queries.",
-        "Managed SQLite & PostgreSQL vector embeddings with automated chunking and cosine similarity indexing.",
-      ],
-      skills: ["Next.js 15", "TypeScript", "Vercel AI SDK", "Python", "FastAPI", "Pinecone"],
-    },
-    {
-      id: "2",
-      role: "Senior Software Engineer Intern",
-      company: "AlphaStream Systems",
-      location: "Hybrid",
-      period: "2023 - 2024",
-      badge: "Internship",
-      highlights: [
-        "Engineered RESTful microservices in FastAPI with PostgreSQL & SQLAlchemy ORM.",
-        "Created glassmorphic dark-mode component libraries matching Neura.ai and Aceternity UI aesthetics.",
-        "Expanded Pytest test suites achieving 94% test coverage across core API routes.",
-      ],
-      skills: ["Python", "PostgreSQL", "Tailwind CSS", "React", "Docker"],
-    },
-    {
-      id: "3",
-      role: "Open-Source Core Contributor",
-      company: "Developer Community",
-      location: "Remote",
-      period: "2022 - Present",
-      badge: "Community",
-      highlights: [
-        "Authored modular Canvas & WebGL particles plugins downloaded over 50k+ times.",
-        "Maintained component documentation, triaged GitHub issues, and reviewed community PRs.",
-      ],
-      skills: ["JavaScript", "WebGL", "Framer Motion", "Git"],
-    },
-  ];
+  const [expandedId, setExpandedId] = useState<string>("0");
 
   return (
     <div className="w-full my-2 space-y-3 text-left font-mono">
-      {/* Timeline List (Un-boxed, clean surface nodes) */}
+      {/* Education Header Badge */}
+      <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border text-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-primary font-bold">🎓 Education:</span>
+          <span className="text-card-foreground font-semibold">{BHAVISH_EDUCATION.degree}</span>
+        </div>
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold">
+          Class of {BHAVISH_EDUCATION.year}
+        </span>
+      </div>
+
+      {/* Experience Timeline */}
       <div className="relative border-l-2 border-border ml-2.5 pl-4 sm:pl-5 space-y-4 my-1">
-        {experiences.map((item) => {
-          const isExpanded = expandedId === item.id;
+        {BHAVISH_EXPERIENCE.map((item, idx) => {
+          const isExpanded = expandedId === String(idx);
           return (
             <motion.div
-              key={item.id}
+              key={item.company}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative group cursor-pointer"
               onClick={() => {
                 playClickSound();
-                setExpandedId(isExpanded ? "" : item.id);
+                setExpandedId(isExpanded ? "" : String(idx));
               }}
             >
               {/* Glowing Node Dot */}

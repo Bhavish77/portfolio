@@ -224,15 +224,40 @@ export default function ChatConsole() {
       return;
     }
 
-    // 5. Fallback for conversational queries (Phase 1 Stub, connected to Gemini 1.5 in Phase 2)
-    const fallbackMessage: MessageItem = {
-      id: `ast-${Date.now()}`,
-      role: "assistant",
-      text: `I received your query: "${query}". I am operating in Phase 1 (UI & Deterministic Router). Multi-step RAG inference via Gemini 1.5 Flash & Pinecone will be hooked up in Phase 2! In the meantime, try one of the prompt chips.`,
-      suggestion: "Click [🚀 Main Projects] to see my project showcase.",
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, fallbackMessage]);
+    // 5. Conversational Path B -> Call Digital Clone AI Engine (/api/chat)
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [
+          ...messages.map((m) => ({
+            role: m.role,
+            content: m.text || (m.widget ? `Rendered ${m.widget} widget` : ""),
+          })),
+          { role: "user", content: query },
+        ],
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const assistantMessage: MessageItem = {
+          id: `ast-${Date.now()}`,
+          role: "assistant",
+          text: data.text || "I'm Bhavish's Digital Clone! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
+          suggestion: "Ask me about my VS Code extension, Playwright tooltip, or AI voice platform Resonance!",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      })
+      .catch(() => {
+        const assistantMessage: MessageItem = {
+          id: `ast-${Date.now()}`,
+          role: "assistant",
+          text: "I'm Bhavish! Feel free to ask me about my work at NativeBridge & AutoFlow, my VS Code extension, or my live AI Voice SaaS Resonance.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      });
   };
 
   const resetChat = () => {

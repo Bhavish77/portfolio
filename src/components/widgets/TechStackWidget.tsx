@@ -2,28 +2,26 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Bot, Cpu, Database, Layout, Server, Zap } from "lucide-react";
+import { Bot, Cloud, Cpu, Database, Layout, Server, Zap } from "lucide-react";
 import {
   SiNextdotjs,
   SiReact,
   SiTypescript,
   SiTailwindcss,
-  SiFramer,
   SiPython,
   SiFastapi,
-  SiNodedotjs,
   SiPostgresql,
-  SiSqlite,
   SiDocker,
-  SiVercel,
   SiGit,
   SiGoogle,
+  SiElectron,
+  SiMongodb,
 } from "react-icons/si";
 import { playClickSound } from "@/utils/audio";
 
 interface SkillItem {
   name: string;
-  level: string;
+  level?: string;
   core?: boolean;
   color: string;
   icon: React.ReactNode;
@@ -42,74 +40,69 @@ export default function TechStackWidget() {
   const categories: SkillCategory[] = [
     {
       id: "frontend",
-      title: "Frontend & UI Engineering",
+      title: "Frontend & Desktop Engineering",
       icon: <Layout size={15} className="text-primary" />,
       skills: [
-        { name: "Next.js 15", level: "Expert", core: true, color: "#ffffff", icon: <SiNextdotjs size={14} /> },
-        { name: "React 19", level: "Expert", core: true, color: "#61DAFB", icon: <SiReact size={14} /> },
-        { name: "TypeScript", level: "Advanced", core: true, color: "#3178C6", icon: <SiTypescript size={14} /> },
-        { name: "Tailwind CSS v4", level: "Expert", core: true, color: "#06B6D4", icon: <SiTailwindcss size={14} /> },
-        { name: "shadcn/ui", level: "Advanced", color: "#ffffff", icon: <SiNextdotjs size={14} /> },
-        { name: "Framer Motion", level: "Advanced", color: "#0055FF", icon: <SiFramer size={14} /> },
+        { name: "React 19", core: true, color: "#61DAFB", icon: <SiReact size={14} /> },
+        { name: "Electron.js", core: true, color: "#47ABE8", icon: <SiElectron size={14} /> },
+        { name: "TypeScript", core: true, color: "#3178C6", icon: <SiTypescript size={14} /> },
+        { name: "MobX State", core: true, color: "#FF9955", icon: <Zap size={14} /> },
+        { name: "Next.js 15", core: true, color: "#ffffff", icon: <SiNextdotjs size={14} /> },
+        { name: "Tailwind CSS v4", core: true, color: "#06B6D4", icon: <SiTailwindcss size={14} /> },
       ],
     },
     {
       id: "backend",
-      title: "Backend & Systems Architecture",
+      title: "Backend & Streaming Systems",
       icon: <Server size={15} className="text-primary" />,
       skills: [
-        { name: "Python", level: "Advanced", core: true, color: "#3776AB", icon: <SiPython size={14} /> },
-        { name: "FastAPI", level: "Advanced", core: true, color: "#009688", icon: <SiFastapi size={14} /> },
-        { name: "Node.js", level: "Intermediate", color: "#5FA04E", icon: <SiNodedotjs size={14} /> },
-        { name: "RESTful APIs", level: "Expert", core: true, color: "#00FFB3", icon: <Zap size={14} /> },
-        { name: "WebSockets", level: "Advanced", color: "#FF6C37", icon: <Zap size={14} /> },
+        { name: "Python", core: true, color: "#3776AB", icon: <SiPython size={14} /> },
+        { name: "FastAPI", core: true, color: "#009688", icon: <SiFastapi size={14} /> },
+        { name: "WebSockets", core: true, color: "#FF6C37", icon: <Zap size={14} /> },
+        { name: "SSE (Server-Sent Events)", core: true, color: "#00FFB3", icon: <Zap size={14} /> },
+        { name: "gRPC Protocols", core: true, color: "#4285F4", icon: <Server size={14} /> },
+        { name: "ADB & Android APIs", core: true, color: "#3DDC84", icon: <Cpu size={14} /> },
       ],
     },
     {
       id: "ai",
-      title: "AI Engineering & Vector Databases",
+      title: "AI Agents & Testing Automation",
       icon: <Cpu size={15} className="text-primary" />,
       skills: [
-        { name: "Vercel AI SDK", level: "Advanced", core: true, color: "#ffffff", icon: <SiVercel size={14} /> },
-        { name: "Gemini 1.5 Flash", level: "Advanced", core: true, color: "#8E75FF", icon: <SiGoogle size={14} /> },
-        { name: "Pinecone Vector DB", level: "Advanced", core: true, color: "#00F0FF", icon: <Database size={14} /> },
-        { name: "Embeddings RAG", level: "Advanced", core: true, color: "#00FFB3", icon: <Cpu size={14} /> },
-        { name: "Langfuse Tracing", level: "Intermediate", color: "#FF9900", icon: <Bot size={14} /> },
+        { name: "Claude Computer Use API", core: true, color: "#D97706", icon: <Bot size={14} /> },
+        { name: "Playwright Automation", core: true, color: "#2EAD33", icon: <Zap size={14} /> },
+        { name: "Appium & Maestro", core: true, color: "#E040FB", icon: <Bot size={14} /> },
+        { name: "Gemini 1.5 Flash", core: true, color: "#8E75FF", icon: <SiGoogle size={14} /> },
+        { name: "LangChain / LangGraph", core: true, color: "#FF9900", icon: <Bot size={14} /> },
       ],
     },
     {
       id: "devops",
-      title: "Database & DevOps Infrastructure",
+      title: "DevOps, Cloud & Storage",
       icon: <Database size={15} className="text-primary" />,
       skills: [
-        { name: "PostgreSQL", level: "Advanced", core: true, color: "#4169E1", icon: <SiPostgresql size={14} /> },
-        { name: "SQLite", level: "Advanced", color: "#003B57", icon: <SiSqlite size={14} /> },
-        { name: "Docker", level: "Intermediate", color: "#2496ED", icon: <SiDocker size={14} /> },
-        { name: "Vercel Serverless", level: "Expert", core: true, color: "#ffffff", icon: <SiVercel size={14} /> },
-        { name: "Git & GitHub", level: "Expert", core: true, color: "#F05032", icon: <SiGit size={14} /> },
+        { name: "Docker", core: true, color: "#2496ED", icon: <SiDocker size={14} /> },
+        { name: "PostgreSQL", core: true, color: "#4169E1", icon: <SiPostgresql size={14} /> },
+        { name: "MongoDB", core: true, color: "#47A248", icon: <SiMongodb size={14} /> },
+        { name: "Amazon S3", core: true, color: "#FF9900", icon: <Cloud size={14} /> },
+        { name: "Modal Serverless GPUs", core: true, color: "#00FFB3", icon: <Server size={14} /> },
+        { name: "GCP (Nginx, SSL)", core: true, color: "#4285F4", icon: <SiGoogle size={14} /> },
       ],
     },
   ];
 
   const filterTabs = [
-    { id: "all", label: "All (20)" },
-    { id: "core", label: "⚡ Core Stack" },
-    { id: "ai", label: "🤖 AI & RAG" },
-    { id: "frontend", label: "💻 Frontend" },
-    { id: "backend", label: "⚙️ Backend" },
+    { id: "all", label: "All Stack" },
+    { id: "ai", label: "🤖 AI & Automation" },
+    { id: "frontend", label: "💻 Desktop & Web" },
+    { id: "backend", label: "⚙️ Backend & Streaming" },
+    { id: "devops", label: "☁️ Cloud & DevOps" },
   ];
 
-  const filteredCategories = categories.map((cat) => {
-    if (activeFilter === "all") return cat;
-    if (activeFilter === "core") {
-      return {
-        ...cat,
-        skills: cat.skills.filter((s) => s.core),
-      };
-    }
-    if (activeFilter === cat.id) return cat;
-    return { ...cat, skills: [] };
-  }).filter((cat) => cat.skills.length > 0);
+  const filteredCategories = categories.filter((cat) => {
+    if (activeFilter === "all") return true;
+    return activeFilter === cat.id;
+  });
 
   return (
     <div className="w-full my-2 space-y-3 text-left font-mono">
@@ -159,19 +152,12 @@ export default function TechStackWidget() {
                 {cat.skills.map((skill) => (
                   <span
                     key={skill.name}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono border transition-all duration-200 group cursor-default ${
-                      skill.core
-                        ? "bg-primary/15 text-primary border-primary/40 font-bold hover:shadow-md hover:shadow-primary/20"
-                        : "bg-muted text-card-foreground border-border hover:border-primary/40"
-                    }`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono border transition-all duration-200 group cursor-default bg-primary/15 text-primary border-primary/40 font-bold hover:shadow-md hover:shadow-primary/20"
                   >
                     <span className="shrink-0 transition-transform group-hover:scale-110" style={{ color: skill.color }}>
                       {skill.icon}
                     </span>
                     {skill.name}
-                    <span className="text-[9px] text-muted-foreground font-normal">
-                      ({skill.level})
-                    </span>
                   </span>
                 ))}
               </div>
