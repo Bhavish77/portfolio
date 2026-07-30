@@ -2,10 +2,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, ZapOff, Layers, Volume2, VolumeX, Search } from "lucide-react";
+import { Send, Sparkles, RefreshCw, Palette, User, ArrowRight, Zap, ZapOff, Layers, Volume2, VolumeX, Search, Download } from "lucide-react";
 import WorkExperienceWidget from "./widgets/WorkExperienceWidget";
 import ProjectsWidget from "./widgets/ProjectsWidget";
 import TechStackWidget from "./widgets/TechStackWidget";
+import EducationWidget from "./widgets/EducationWidget";
+import ContactWidget from "./widgets/ContactWidget";
 import { Button } from "@/components/ui/button";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import BootLoader from "./BootLoader";
@@ -14,7 +16,7 @@ import CyberBackground from "./CyberBackground";
 import { playClickSound, playToggleSound, toggleSound, isSoundEnabled } from "@/utils/audio";
 
 export type MessageRole = "user" | "assistant";
-export type WidgetType = "work-experience" | "main-projects" | "tech-stack" | "theme-feedback";
+export type WidgetType = "work-experience" | "main-projects" | "tech-stack" | "education" | "contact-cta" | "theme-feedback";
 
 export interface MessageItem {
   id: string;
@@ -46,12 +48,12 @@ export default function ChatConsole() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Pre-populated Traditional Portfolio Initial Stream
+  // Option A Pre-populated Stream Order: Experience -> Projects -> Tech Stack -> Education -> Contact
   const initialMessages: MessageItem[] = [
     {
       id: "init-1",
       role: "assistant",
-      text: "👋 Welcome! I'm Bhavish's AI Digital Clone. Here is a complete breakdown of my work experience, featured projects, and engineering stack:",
+      text: "👋 Welcome! I'm Bhavish's AI Digital Clone. Here is a complete breakdown of my work experience, featured projects, engineering stack, education, and contact card:",
       timestamp: new Date("2026-01-01T00:00:00Z"),
     },
     {
@@ -76,6 +78,20 @@ export default function ChatConsole() {
       timestamp: new Date("2026-01-01T00:00:00Z"),
     },
     {
+      id: "sec-education",
+      role: "assistant",
+      text: "🎓 Academic Degree & Education Background:",
+      widget: "education",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
+    },
+    {
+      id: "sec-contact",
+      role: "assistant",
+      text: "📬 Direct Contact Card & Resume Download:",
+      widget: "contact-cta",
+      timestamp: new Date("2026-01-01T00:00:00Z"),
+    },
+    {
       id: "init-prompt",
       role: "assistant",
       text: "💬 Feel free to ask my AI Digital Clone any questions about my background, technical decisions, or engineering projects below!",
@@ -96,11 +112,14 @@ export default function ChatConsole() {
   // Command palette action handler
   const handleCommandPaletteAction = (actionId: string) => {
     if (actionId === "download-resume") {
-      alert("Downloading Bhavish's Resume PDF...");
+      const link = document.createElement("a");
+      link.href = "/bhavish_resume.pdf";
+      link.download = "Bhavish_Resume.pdf";
+      link.click();
       return;
     }
     if (actionId === "contact-email") {
-      window.location.href = "mailto:bhavish@example.com";
+      window.location.href = "mailto:bhavishmayyar77@gmail.com";
       return;
     }
     if (actionId === "reset-chat") {
@@ -201,14 +220,42 @@ export default function ChatConsole() {
         role: "assistant",
         text: "Here is my architecture tech stack breakdown:",
         widget: "tech-stack",
-        suggestion: "Want to try light mode? Click [☀️ Light / 🌙 Dark Mode] to toggle theme modes!",
+        suggestion: "Click [🎓 Education] or [📬 Contact & Resume] below to view my degree & direct contact details!",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
       return;
     }
 
-    // 4. Matrix Theme / Mode Toggle Intent
+    // 4. Education Intent
+    if (q.includes("education") || q.includes("degree") || q.includes("college") || q.includes("m.sc") || q.includes("🎓")) {
+      setIsTyping(false);
+      const assistantMessage: MessageItem = {
+        id: `ast-${Date.now()}`,
+        role: "assistant",
+        text: "Here is my academic degree & education background:",
+        widget: "education",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      return;
+    }
+
+    // 5. Contact & Resume Intent
+    if (q.includes("contact") || q.includes("hire") || q.includes("email") || q.includes("resume") || q.includes("reach out") || q.includes("📬")) {
+      setIsTyping(false);
+      const assistantMessage: MessageItem = {
+        id: `ast-${Date.now()}`,
+        role: "assistant",
+        text: "Here is my direct contact card & resume download link:",
+        widget: "contact-cta",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      return;
+    }
+
+    // 6. Matrix Theme / Mode Toggle Intent
     if (q.includes("theme") || q.includes("mode") || q.includes("light") || q.includes("dark") || q.includes("🎨") || q.includes("☀️")) {
       setIsTyping(false);
       const nextTheme = theme === "dark" ? "light" : "dark";
@@ -225,7 +272,7 @@ export default function ChatConsole() {
       return;
     }
 
-    // 5. Conversational Path B -> Stream Real-Time LLM Tokens (/api/chat)
+    // 7. Conversational Path B -> Stream Real-Time LLM Tokens (/api/chat)
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -341,9 +388,11 @@ export default function ChatConsole() {
   };
 
   const promptChips = [
-    { label: "💼 Work Experience", targetId: "sec-experience", query: "💼 Work Experience" },
-    { label: "🚀 Main Projects", targetId: "sec-projects", query: "🚀 Main Projects" },
+    { label: "💼 Experience", targetId: "sec-experience", query: "💼 Work Experience" },
+    { label: "🚀 Projects", targetId: "sec-projects", query: "🚀 Main Projects" },
     { label: "🛠️ Tech Stack", targetId: "sec-techstack", query: "🛠️ Tech Stack" },
+    { label: "🎓 Education", targetId: "sec-education", query: "🎓 Education" },
+    { label: "📬 Contact & Resume", targetId: "sec-contact", query: "📬 Contact & Resume" },
     { label: "☀️ Light / 🌙 Dark Mode", targetId: "theme-toggle", query: "☀️ Light / 🌙 Dark Mode" },
   ];
 
@@ -368,7 +417,7 @@ export default function ChatConsole() {
           {/* ASCII Avatar Logo in Navbar */}
           <div className="w-6 h-6 rounded-md overflow-hidden border border-primary/40 bg-black flex items-center justify-center">
             <AsciiArt
-              src="https://assets.aceternity.com/avatars/manu.webp"
+              src="/bhavish.png"
               resolution={25}
               color="var(--primary)"
               animated={false}
@@ -389,6 +438,18 @@ export default function ChatConsole() {
 
         {/* Navbar Controls */}
         <div className="flex items-center gap-2">
+          {/* Direct Resume Download Button in Navbar */}
+          <a
+            href="/bhavish_resume.pdf"
+            download="Bhavish_Resume.pdf"
+            onClick={() => playClickSound()}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/15 border border-primary/40 text-[11px] font-mono font-bold text-primary hover:bg-primary/25 transition-all"
+            title="Download Bhavish's Resume PDF"
+          >
+            <Download size={12} />
+            <span>Resume 📄</span>
+          </a>
+
           {/* Cmd + K Command Palette Button */}
           <button
             onClick={() => {
@@ -491,7 +552,7 @@ export default function ChatConsole() {
               {/* ASCII Art Avatar Hero Container */}
               <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 shrink-0 bg-black flex items-center justify-center">
                 <AsciiArt
-                  src="https://assets.aceternity.com/avatars/manu.webp"
+                  src="/bhavish.png"
                   resolution={55}
                   color="var(--primary)"
                   animationStyle="fade"
@@ -510,7 +571,7 @@ export default function ChatConsole() {
                   Hey, I&apos;m Bhavish 👋
                 </h2>
                 <p className="text-xs sm:text-sm font-bold text-primary">
-                  Full-Stack AI Engineer
+                  Full-Stack AI Developer
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed pt-1 max-w-lg">
                   Welcome to my interactive console! You&apos;re chatting directly with my digital clone. Ask me about my architecture choices, check out my work history, or demo my live projects below!
@@ -533,7 +594,7 @@ export default function ChatConsole() {
                   {msg.role === "assistant" && (
                     <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 mt-0.5 flex items-center justify-center shadow-sm">
                       <AsciiArt
-                        src="https://assets.aceternity.com/avatars/manu.webp"
+                        src="/bhavish.png"
                         resolution={20}
                         color="var(--primary)"
                         animated={false}
@@ -569,6 +630,8 @@ export default function ChatConsole() {
                     {msg.widget === "work-experience" && <WorkExperienceWidget />}
                     {msg.widget === "main-projects" && <ProjectsWidget />}
                     {msg.widget === "tech-stack" && <TechStackWidget />}
+                    {msg.widget === "education" && <EducationWidget />}
+                    {msg.widget === "contact-cta" && <ContactWidget />}
                     {msg.widget === "theme-feedback" && (
                       <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/30 text-xs font-mono text-foreground font-semibold">
                         ✨ Applied MATRIX {theme.toUpperCase()} theme tokens to root CSS state.
@@ -598,7 +661,7 @@ export default function ChatConsole() {
               <div className="flex gap-2.5 justify-start items-center">
                 <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 flex items-center justify-center">
                   <AsciiArt
-                    src="https://assets.aceternity.com/avatars/manu.webp"
+                    src="/bhavish.png"
                     resolution={20}
                     color="var(--primary)"
                     animated={false}

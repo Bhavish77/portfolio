@@ -72,7 +72,7 @@ export default function TechStackWidget() {
         { name: "Claude Computer Use API", core: true, color: "#D97706", icon: <Bot size={14} /> },
         { name: "Playwright Automation", core: true, color: "#2EAD33", icon: <Zap size={14} /> },
         { name: "Appium & Maestro", core: true, color: "#E040FB", icon: <Bot size={14} /> },
-        { name: "Gemini 1.5 Flash", core: true, color: "#8E75FF", icon: <SiGoogle size={14} /> },
+        { name: "Gemini 3.5 Flash", core: true, color: "#8E75FF", icon: <SiGoogle size={14} /> },
         { name: "LangChain / LangGraph", core: true, color: "#FF9900", icon: <Bot size={14} /> },
       ],
     },

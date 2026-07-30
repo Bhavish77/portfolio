@@ -31,7 +31,7 @@ export const BHAVISH_EDUCATION = {
 export const BHAVISH_EXPERIENCE: ExperienceData[] = [
   {
     company: "NativeBridge",
-    role: "Full-Stack Software Engineer",
+    role: "Full-Stack AI Developer",
     period: "Apr 2025 - Present",
     badge: "Full-Time",
     location: "Remote / India",
@@ -47,7 +47,7 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
   },
   {
     company: "AutoFlow",
-    role: "Software Engineer",
+    role: "Full-Stack AI Developer",
     period: "Sep 2024 - Apr 2025",
     badge: "Full-Time",
     location: "Remote / India",
@@ -62,7 +62,7 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
   },
   {
     company: "AutoFlow",
-    role: "Frontend Software Engineer Intern",
+    role: "Frontend Developer Intern",
     period: "Dec 2023 - Sep 2024",
     badge: "Internship",
     location: "Remote / India",
@@ -149,9 +149,14 @@ You are the AI Digital Clone of Bhavish, a Full-Stack & AI Systems Engineer hold
 7. **Personal Interests, Hobbies & Gaming**:
    - **Hobbies**: Gym, outdoor cycling, and sports bikes 🏍️.
    - **PC Gaming**: Passionate PC gamer! All-time favorite games include **Subnautica**, **Skyrim**, **Fallout**, **Prototype**, and immersive action/exploration RPGs.
+8. **Contact & Socials**:
+   - Email: **bhavishmayyar77@gmail.com**
+   - LinkedIn: **https://www.linkedin.com/in/bhavish-mayyar-b19618217/**
+   - GitHub: **https://github.com/Bhavish77**
 
 ### Instructions:
 - Answer questions naturally in 1st-person ("I").
 - Keep responses concise, clear, and structured with markdown bullet points when explaining architecture or achievements.
 - If asked about hobbies, gaming, bikes, or life outside coding, enthusiastically share your love for gym workouts, cycling, sports bikes, and your favorite PC games (Subnautica, Skyrim, Fallout, Prototype)!
+- If asked how to reach or contact Bhavish, provide email **bhavishmayyar77@gmail.com** and LinkedIn **https://www.linkedin.com/in/bhavish-mayyar-b19618217/**!
 `;

@@ -12,7 +12,7 @@ export default function WorkExperienceWidget() {
   return (
     <div className="w-full my-2 space-y-3 text-left font-mono">
       {/* Education Header Badge */}
-      <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border text-xs">
+      {/* <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border text-xs">
         <div className="flex items-center gap-2">
           <span className="text-primary font-bold">🎓 Education:</span>
           <span className="text-card-foreground font-semibold">{BHAVISH_EDUCATION.degree}</span>
@@ -20,7 +20,7 @@ export default function WorkExperienceWidget() {
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold whitespace-nowrap">
           Class of {BHAVISH_EDUCATION.year}
         </span>
-      </div>
+      </div> */}
 
       {/* Experience Timeline */}
       <div className="relative border-l-2 border-border ml-2.5 pl-4 sm:pl-5 space-y-4 my-1">
@@ -39,20 +39,18 @@ export default function WorkExperienceWidget() {
             >
               {/* Glowing Node Dot */}
               <span
-                className={`absolute -left-[23px] sm:-left-[27px] top-3.5 w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
-                  isExpanded
+                className={`absolute -left-[23px] sm:-left-[27px] top-3.5 w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${isExpanded
                     ? "bg-primary border-primary scale-125 shadow-md shadow-primary/60"
                     : "bg-background border-border group-hover:border-primary"
-                }`}
+                  }`}
               />
 
               {/* Experience Item Card */}
               <div
-                className={`p-3.5 sm:p-4 rounded-xl border transition-all duration-300 ${
-                  isExpanded
+                className={`p-3.5 sm:p-4 rounded-xl border transition-all duration-300 ${isExpanded
                     ? "bg-card border-primary/50 shadow-md"
                     : "bg-card/80 border-border hover:border-primary/30"
-                }`}
+                  }`}
               >
                 <div className="space-y-1.5">
                   {/* Top Line: Role Title + Badge + Chevron */}
@@ -74,9 +72,8 @@ export default function WorkExperienceWidget() {
 
                     <ChevronRight
                       size={16}
-                      className={`text-primary shrink-0 transition-transform duration-300 ${
-                        isExpanded ? "rotate-90" : ""
-                      }`}
+                      className={`text-primary shrink-0 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""
+                        }`}
                     />
                   </div>
 
