@@ -28,12 +28,14 @@ export default function CyberBackground() {
     let height = (canvas.height = window.innerHeight);
     let orbitAngle = 0;
 
+    const isMobile = width < 768;
+
     const mouse = {
       x: -1000,
       y: -1000,
-      radius: 160,
-      orbitRadius: 52,
-      maxCapacity: 30,
+      radius: isMobile ? 120 : 160,
+      orbitRadius: isMobile ? 40 : 52,
+      maxCapacity: isMobile ? 15 : 30,
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -50,8 +52,10 @@ export default function CyberBackground() {
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("resize", handleResize);
 
-    // Dynamic Binary Nodes (0s and 1s)
-    const particleCount = 120;
+    // Optimized Particle Count: 22 on Mobile (<768px) for 60fps, 65 on Desktop
+    const particleCount = isMobile ? 22 : 65;
+    const lineDistance = isMobile ? 95 : 125;
+
     const particles: BinaryParticle[] = Array.from({ length: particleCount }).map((_, idx) => ({
       id: idx,
       x: Math.random() * width,
@@ -151,10 +155,10 @@ export default function CyberBackground() {
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 125) {
+          if (dist < lineDistance) {
             const lineOpacity = isDark
-              ? 0.28 * (1 - dist / 125)
-              : 0.55 * (1 - dist / 125);
+              ? 0.28 * (1 - dist / lineDistance)
+              : 0.55 * (1 - dist / lineDistance);
             ctx.strokeStyle = `rgba(${rgbColor}, ${lineOpacity})`;
             ctx.lineWidth = isDark ? 0.8 : 1.2;
             ctx.shadowColor = shadowColor;
@@ -203,7 +207,7 @@ export default function CyberBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[1] opacity-80"
+      className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-500"
     />
   );
 }

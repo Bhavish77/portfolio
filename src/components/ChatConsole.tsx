@@ -401,7 +401,7 @@ export default function ChatConsole() {
       {/* 1. Terminal Boot Loader Screen */}
       <BootLoader />
 
-      {/* 2. Cyber Ambient Canvas Overlay */}
+      {/* 2. Cyber Ambient Canvas Overlay (Optimized particle count on mobile) */}
       <CyberBackground />
 
       {/* 3. Command Palette Modal */}
@@ -411,11 +411,11 @@ export default function ChatConsole() {
         onSelectAction={handleCommandPaletteAction}
       />
 
-      {/* Super Slim Header Bar (44px height) */}
-      <header className="h-11 border-b border-border/40 bg-background/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20 shrink-0">
-        <div className="flex items-center gap-2.5">
+      {/* Super Slim Mobile-Responsive Header Bar (44px height) */}
+      <header className="h-11 border-b border-border/40 bg-background/90 backdrop-blur-md px-2.5 sm:px-6 flex items-center justify-between z-20 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* ASCII Avatar Logo in Navbar */}
-          <div className="w-6 h-6 rounded-md overflow-hidden border border-primary/40 bg-black flex items-center justify-center">
+          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md overflow-hidden border border-primary/40 bg-black flex items-center justify-center shrink-0">
             <AsciiArt
               src="/bhavish.png"
               resolution={25}
@@ -426,28 +426,29 @@ export default function ChatConsole() {
               className="w-full h-full scale-125"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-bold text-sm tracking-tight flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <h1 className="font-bold text-xs sm:text-sm tracking-tight flex items-center gap-1">
               Bhavish<span className="text-primary font-extrabold">.ai</span>
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary hidden sm:inline-block">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary hidden md:inline-block">
               Digital Clone v1.0
             </span>
           </div>
         </div>
 
-        {/* Navbar Controls */}
-        <div className="flex items-center gap-2">
-          {/* Direct Resume Download Button in Navbar */}
+        {/* Navbar Controls - Mobile Responsive Layout */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Direct Resume Download Button */}
           <a
             href="/bhavish_resume.pdf"
             download="Bhavish_Resume.pdf"
             onClick={() => playClickSound()}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/15 border border-primary/40 text-[11px] font-mono font-bold text-primary hover:bg-primary/25 transition-all"
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-primary/15 border border-primary/40 text-[10px] sm:text-[11px] font-mono font-bold text-primary hover:bg-primary/25 transition-all shrink-0"
             title="Download Bhavish's Resume PDF"
           >
             <Download size={12} />
-            <span>Resume 📄</span>
+            <span className="hidden sm:inline">Resume 📄</span>
+            <span className="sm:hidden">Resume</span>
           </a>
 
           {/* Cmd + K Command Palette Button */}
@@ -456,12 +457,12 @@ export default function ChatConsole() {
               playClickSound();
               setCommandPaletteOpen(true);
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border/50 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted border border-border/50 text-[10px] sm:text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shrink-0"
             title="Open Command Palette (Ctrl+K)"
           >
-            <Search size={12} className="text-primary" />
+            <Search size={13} className="text-primary" />
             <span className="hidden sm:inline">Search</span>
-            <kbd className="text-[9px] px-1 py-0.2 rounded bg-background border border-border text-primary font-bold">
+            <kbd className="hidden sm:inline-block text-[9px] px-1 py-0.2 rounded bg-background border border-border text-primary font-bold">
               ⌘K
             </kbd>
           </button>
@@ -472,33 +473,34 @@ export default function ChatConsole() {
               const state = toggleSound();
               setSoundOn(state);
             }}
-            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 sm:p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
             title={soundOn ? "Mute Sci-Fi Audio" : "Unmute Sci-Fi Audio"}
           >
-            {soundOn ? <Volume2 size={15} className="text-primary" /> : <VolumeX size={15} />}
+            {soundOn ? <Volume2 size={14} className="text-primary" /> : <VolumeX size={14} />}
           </button>
 
-          {/* Theme Mode Toggle */}
+          {/* Theme Mode Toggle - Compact on Mobile */}
           <button
             onClick={() => {
               const nextTheme = theme === "dark" ? "light" : "dark";
               setTheme(nextTheme);
               playToggleSound();
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border/50 text-[11px] font-mono text-foreground hover:border-primary/50 transition-all"
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted border border-border/50 text-[10px] sm:text-[11px] font-mono text-foreground hover:border-primary/50 transition-all shrink-0"
             title="Toggle theme mode"
           >
-            <Palette size={12} className="text-primary" />
-            <span>MODE: MATRIX {theme.toUpperCase()}</span>
+            <Palette size={13} className="text-primary" />
+            <span className="hidden sm:inline">MODE: MATRIX {theme.toUpperCase()}</span>
+            <span className="sm:hidden font-bold uppercase">{theme}</span>
           </button>
 
           {/* Reset Chat */}
           <button
             onClick={resetChat}
-            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 sm:p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
             title="Reset Conversation"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={13} />
           </button>
         </div>
       </header>
@@ -546,11 +548,11 @@ export default function ChatConsole() {
         {/* Central Chat Console Area */}
         <main className="flex-1 flex flex-col h-full min-w-0 bg-transparent relative z-10">
           {/* Message Stream */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-5 max-w-4xl mx-auto w-full scroll-smooth">
+          <div className="flex-1 overflow-y-auto p-2.5 sm:p-5 space-y-4 sm:space-y-5 max-w-4xl mx-auto w-full scroll-smooth">
             {/* Pinned Digital Clone Hero Card */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-card border border-border flex flex-col sm:flex-row items-center gap-5 shadow-sm text-center sm:text-left mb-4">
+            <div className="p-4 sm:p-6 rounded-2xl bg-card border border-border flex flex-col sm:flex-row items-center gap-4 sm:gap-5 shadow-sm text-center sm:text-left mb-2 sm:mb-4">
               {/* ASCII Art Avatar Hero Container */}
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 shrink-0 bg-black flex items-center justify-center">
+              <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 shrink-0 bg-black flex items-center justify-center">
                 <AsciiArt
                   src="/bhavish.png"
                   resolution={55}
@@ -567,7 +569,7 @@ export default function ChatConsole() {
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
                   Digital Clone Online
                 </div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+                <h2 className="text-lg sm:text-2xl font-extrabold text-foreground tracking-tight">
                   Hey, I&apos;m Bhavish 👋
                 </h2>
                 <p className="text-xs sm:text-sm font-bold text-primary">
@@ -589,10 +591,10 @@ export default function ChatConsole() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className={`flex gap-2.5 pt-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex gap-2 sm:gap-2.5 pt-1 sm:pt-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 mt-0.5 flex items-center justify-center shadow-sm">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 mt-0.5 flex items-center justify-center shadow-sm">
                       <AsciiArt
                         src="/bhavish.png"
                         resolution={20}
@@ -605,11 +607,11 @@ export default function ChatConsole() {
                     </div>
                   )}
 
-                  <div className={`max-w-[90%] sm:max-w-[80%] space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                  <div className={`max-w-[92%] sm:max-w-[80%] space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
                     {/* Text Content */}
                     {msg.text && (
                       <div
-                        className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${msg.isError
+                        className={`p-3 sm:p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${msg.isError
                           ? "bg-[#fee2e2] dark:bg-[#1a0505] text-red-950 dark:text-red-200 border border-red-500/60 rounded-tl-none font-mono shadow-lg shadow-red-500/20"
                           : msg.role === "user"
                             ? "bg-primary/20 text-foreground border border-primary/40 rounded-tr-none font-medium"
@@ -648,8 +650,8 @@ export default function ChatConsole() {
                   </div>
 
                   {msg.role === "user" && (
-                    <div className="w-7 h-7 rounded-full bg-muted border border-border flex items-center justify-center text-foreground shrink-0 mt-0.5">
-                      <User size={15} />
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-muted border border-border flex items-center justify-center text-foreground shrink-0 mt-0.5">
+                      <User size={14} />
                     </div>
                   )}
                 </motion.div>
@@ -659,7 +661,7 @@ export default function ChatConsole() {
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex gap-2.5 justify-start items-center">
-                <div className="w-7 h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 flex items-center justify-center">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-primary/40 bg-black shrink-0 flex items-center justify-center">
                   <AsciiArt
                     src="/bhavish.png"
                     resolution={20}
@@ -683,7 +685,7 @@ export default function ChatConsole() {
           </div>
 
           {/* Bottom Toolbar & Compact Input */}
-          <footer className="p-2.5 sm:p-3 border-t border-border/40 bg-background/95 backdrop-blur-md shrink-0 z-20">
+          <footer className="p-2 sm:p-3 border-t border-border/40 bg-background/95 backdrop-blur-md shrink-0 z-20">
             <div className="max-w-4xl mx-auto space-y-2">
               {/* Mobile Quick Actions */}
               <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -711,12 +713,12 @@ export default function ChatConsole() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Talk to my digital clone or ask anything about my work..."
-                  className="flex-1 bg-card border border-border focus:border-primary rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-card-foreground placeholder:text-muted-foreground outline-none transition-colors"
+                  className="flex-1 bg-card border border-border focus:border-primary rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs sm:text-sm text-card-foreground placeholder:text-muted-foreground outline-none transition-colors"
                 />
                 <Button
                   type="submit"
                   disabled={!input.trim()}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-primary/20 transition-all disabled:opacity-40"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md shadow-primary/20 transition-all disabled:opacity-40"
                 >
                   <Send size={15} />
                 </Button>
