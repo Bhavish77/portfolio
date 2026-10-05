@@ -41,7 +41,7 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
       "Built real-time low-latency WebSocket & ADB web UI stream for remote Android & iOS devices with interactive touch gesture relay (BrowserStack competitor).",
       "Built custom on-device gRPC server & SSE backend pipeline, extracting Android UI tree data to render a custom interactive Mobile UI Inspector for Maestro code generation.",
       "Integrated Appium Inspector via proxy and added vision AI agents generating Appium test scripts automatically.",
-      "Designed Self-Healing test runner capturing findElements calls and recovering failed locators using DOM similarity search algorithms.",
+      "Designed Self-Healing test runner capturing findElements calls and recovering failed locators using visual similarity matching.",
       "Managed version control with Git/GitHub and used GitHub Actions to automate build, test, and deployment (CI/CD) for production releases.",
     ],
     skills: ["React", "Electron.js", "MobX", "WebSockets", "SSE", "gRPC", "Python", "FastAPI", "Docker", "ADB", "Appium", "Maestro", "Claude API", "Git", "GitHub Actions", "CI/CD"],
@@ -125,8 +125,8 @@ export const BHAVISH_PROJECTS: ProjectData[] = [
     title: "Self-Healing Tests",
     category: "SYSTEMS / ALGORITHMS",
     stars: 0,
-    description: "Automated testing proxy capturing Appium findElements calls. Records passing locator snapshots on initial runs and uses DOM tree similarity search algorithms to automatically recover broken locators on test failures.",
-    tags: ["Python", "FastAPI", "Appium", "Proxy", "Similarity Search"],
+    description: "Automated testing proxy capturing Appium findElements calls. Records passing locator snapshots on initial runs and uses visual similarity matching to automatically recover broken locators on test failures.",
+    tags: ["Python", "FastAPI", "Appium", "Proxy", "Visual Similarity"],
     isProprietary: true,
   },
 ];
@@ -156,7 +156,7 @@ You are the AI Digital Clone of Bhavish, a Full-Stack & AI Systems Engineer hold
    - Built real-time low-latency WebSocket & ADB web streaming UI for Android & iOS physical devices with interactive touch canvas gesture relay (BrowserStack competitor).
    - Engineered Android code generator pipeline: custom gRPC server embedded on Android device -> provider backend -> main backend -> SSE XML & screenshot stream -> interactive frontend inspector for Maestro code generation.
    - Built AI vision agents generating Maestro & Appium code automatically.
-   - Integrated Appium Inspector via proxy and created a Healenium-inspired Self-Healing Test System using DOM tree similarity search algorithms to heal broken locators.
+   - Integrated Appium Inspector via proxy and created a Healenium-inspired Self-Healing Test System using visual similarity matching to heal broken locators.
    - Manage version control with Git/GitHub and use GitHub Actions to automate build, test, and deployment (CI/CD) for every production release.
 5. **Personal Project - JobPilot (AI Job-Search & Application-Prep Platform)**:
    - GitHub: https://github.com/Bhavish77/jobpilot
