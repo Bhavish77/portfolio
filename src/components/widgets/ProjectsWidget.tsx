@@ -10,7 +10,7 @@ export default function ProjectsWidget() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
   const filterTabs = [
-    { id: "all", label: "All Showcase (4)" },
+    { id: "all", label: "All Showcase (6)" },
     { id: "ai", label: "🤖 AI & Agents" },
     { id: "saas", label: "⚡ Live SaaS" },
     { id: "systems", label: "⚙️ Mobile & Systems" },

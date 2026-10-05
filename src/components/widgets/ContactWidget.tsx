@@ -26,7 +26,7 @@ export default function ContactWidget() {
 
       {/* Main Pitch */}
       <p className="text-xs text-muted-foreground leading-relaxed">
-        I&apos;m actively seeking Full-Stack &amp; AI Systems Engineering roles! Whether you want to discuss my vision-agentic testing pipeline, BrowserStack competitor device farm, or full-stack SaaS architectures—let&apos;s connect.
+        I&apos;m actively seeking Full-Stack &amp; AI Systems Engineering roles! Whether you want to discuss my vision-agentic testing pipeline, BrowserStack competitor device farm, self-correcting RAG pipelines, or full-stack SaaS architectures—let&apos;s connect.
       </p>
 
       {/* Action Buttons Grid */}

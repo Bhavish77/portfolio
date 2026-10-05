@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Bot, Cloud, Cpu, Database, Layout, Server, Zap } from "lucide-react";
+import { Bot, Cloud, Cpu, Database, Layers, Layout, Server, Zap } from "lucide-react";
 import {
   SiNextdotjs,
   SiReact,
@@ -65,6 +65,19 @@ export default function TechStackWidget() {
       ],
     },
     {
+      id: "infra",
+      title: "Backend Infra & Messaging",
+      icon: <Layers size={15} className="text-primary" />,
+      skills: [
+        { name: "Celery", core: true, color: "#37814A", icon: <Zap size={14} /> },
+        { name: "RabbitMQ", core: true, color: "#FF6600", icon: <Server size={14} /> },
+        { name: "Redis", core: true, color: "#DC382D", icon: <Database size={14} /> },
+        { name: "SQLAlchemy (Async)", core: true, color: "#D71F00", icon: <Database size={14} /> },
+        { name: "pgvector (Vector DB)", core: true, color: "#336791", icon: <Database size={14} /> },
+        { name: "Git & GitHub Actions (CI/CD)", core: true, color: "#F05032", icon: <SiGit size={14} /> },
+      ],
+    },
+    {
       id: "ai",
       title: "AI Agents & Testing Automation",
       icon: <Cpu size={15} className="text-primary" />,
@@ -74,6 +87,7 @@ export default function TechStackWidget() {
         { name: "Appium & Maestro", core: true, color: "#E040FB", icon: <Bot size={14} /> },
         { name: "Gemini 3.5 Flash", core: true, color: "#8E75FF", icon: <SiGoogle size={14} /> },
         { name: "LangChain / LangGraph", core: true, color: "#FF9900", icon: <Bot size={14} /> },
+        { name: "Vector DBs: Pinecone, Qdrant, Chroma", core: true, color: "#00B386", icon: <Database size={14} /> },
       ],
     },
     {
@@ -96,6 +110,7 @@ export default function TechStackWidget() {
     { id: "ai", label: "🤖 AI & Automation" },
     { id: "frontend", label: "💻 Desktop & Web" },
     { id: "backend", label: "⚙️ Backend & Streaming" },
+    { id: "infra", label: "📨 Infra & Messaging" },
     { id: "devops", label: "☁️ Cloud & DevOps" },
   ];
 

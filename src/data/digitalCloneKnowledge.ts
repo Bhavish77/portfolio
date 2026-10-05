@@ -42,8 +42,9 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
       "Built custom on-device gRPC server & SSE backend pipeline, extracting Android UI tree data to render a custom interactive Mobile UI Inspector for Maestro code generation.",
       "Integrated Appium Inspector via proxy and added vision AI agents generating Appium test scripts automatically.",
       "Designed Self-Healing test runner capturing findElements calls and recovering failed locators using DOM similarity search algorithms.",
+      "Managed version control with Git/GitHub and used GitHub Actions to automate build, test, and deployment (CI/CD) for production releases.",
     ],
-    skills: ["React", "Electron.js", "MobX", "WebSockets", "SSE", "gRPC", "Python", "FastAPI", "Docker", "ADB", "Appium", "Maestro", "Claude API"],
+    skills: ["React", "Electron.js", "MobX", "WebSockets", "SSE", "gRPC", "Python", "FastAPI", "Docker", "ADB", "Appium", "Maestro", "Claude API", "Git", "GitHub Actions", "CI/CD"],
   },
   {
     company: "AutoFlow",
@@ -76,6 +77,23 @@ export const BHAVISH_EXPERIENCE: ExperienceData[] = [
 ];
 
 export const BHAVISH_PROJECTS: ProjectData[] = [
+  {
+    title: "JobPilot - AI Job-Search & Application-Prep Platform",
+    category: "AI AGENTS / MULTI-AGENT",
+    stars: 0,
+    description: "Resumable LangGraph multi-agent pipeline that drafts tailored resumes, cover letters, and interview prep grounded in the user's real background — deliberately prepare-only, it never auto-submits on the user's behalf. Distributed, atomic Redis rate-limiting (Lua-script token bucket + daily-quota gate) protects a shared LLM budget across a Celery worker pool, and Postgres-checkpointed state resumes failed runs from the exact step that failed, never from scratch.",
+    tags: ["Python", "FastAPI", "Celery", "LangGraph", "Node.js", "Next.js 15", "PostgreSQL", "Redis", "RabbitMQ", "Gemini API"],
+    githubUrl: "https://github.com/Bhavish77/jobpilot",
+  },
+  {
+    title: "AskDocs - RAG Document Q&A Platform",
+    category: "AI / RAG",
+    stars: 0,
+    description: "Self-correcting RAG chat pipeline in LangGraph over a pgvector vector database with Gemini embeddings (retrieve → grade → conditional rewrite → generate → verify) that grades its own retrieval quality and checks answers for groundedness before returning them. Crash-safe async ingestion via a hand-written Postgres job queue (FOR UPDATE SKIP LOCKED), from-scratch auth with per-user data isolation, and a token-by-token SSE streaming UI in vanilla JS — backed by 64 automated tests running in GitHub Actions CI against a real Postgres instance.",
+    tags: ["Python 3.12", "FastAPI", "LangGraph", "PostgreSQL", "pgvector (Vector DB)", "Vector Search", "Embeddings", "SSE", "Docker", "GitHub Actions"],
+    githubUrl: "https://github.com/Bhavish77/chatpdf",
+    liveUrl: "https://askdocs-e8m6.onrender.com",
+  },
   {
     title: "Resonance - Full-Stack AI Voice Generation SaaS",
     category: "FULL-STACK AI / SAAS",
@@ -139,17 +157,35 @@ You are the AI Digital Clone of Bhavish, a Full-Stack & AI Systems Engineer hold
    - Engineered Android code generator pipeline: custom gRPC server embedded on Android device -> provider backend -> main backend -> SSE XML & screenshot stream -> interactive frontend inspector for Maestro code generation.
    - Built AI vision agents generating Maestro & Appium code automatically.
    - Integrated Appium Inspector via proxy and created a Healenium-inspired Self-Healing Test System using DOM tree similarity search algorithms to heal broken locators.
-5. **Production Project - Resonance (Live AI Voice Generator SaaS)**:
+   - Manage version control with Git/GitHub and use GitHub Actions to automate build, test, and deployment (CI/CD) for every production release.
+5. **Personal Project - JobPilot (AI Job-Search & Application-Prep Platform)**:
+   - GitHub: https://github.com/Bhavish77/jobpilot
+   - Built a resumable LangGraph multi-agent pipeline that drafts tailored resumes, cover letters, and interview prep grounded in my real background — deliberately prepare-only, it never auto-submits applications on the user's behalf.
+   - Designed a distributed, atomic rate-limiting system in Redis (a lazily refilled Lua-script token bucket plus a separate daily-quota gate) protecting a shared LLM budget across a Celery worker pool, with every check-and-consume step atomic under concurrency.
+   - Implemented Postgres-checkpointed pipeline state with human-in-the-loop approval and automatic recovery from transient LLM provider failures — a retry resumes at the exact step that failed, never from scratch.
+   - Built an automated ATS-verification loop that compiles generated resumes to real PDFs, extracts the text layer the way an ATS parser would to verify formatting survives, and rewrites overflowing content by relevance.
+   - Polyglot stack: FastAPI, Celery, Node.js, Next.js 15, PostgreSQL, Redis, RabbitMQ, Google Gemini API, with real-time status pushed over a JWT-authenticated WebSocket service.
+6. **Personal Project - AskDocs (RAG Document Q&A Platform)**:
+   - GitHub: https://github.com/Bhavish77/chatpdf · Live: https://askdocs-e8m6.onrender.com
+   - Built a self-correcting RAG chat pipeline with LangGraph over a pgvector vector database with Gemini embeddings (retrieve → grade → conditional rewrite → generate → verify) that grades its own retrieval quality and checks final answers for groundedness before returning them.
+   - Designed a crash-safe async document ingestion system using a hand-written PostgreSQL job queue (FOR UPDATE SKIP LOCKED) with exponential backoff, dead-lettering, and idempotent upserts — verified live that killing the worker mid-job and restarting produces zero duplicate data.
+   - Implemented authentication and per-user data isolation from scratch (argon2id hashing, server-side sessions, CSRF protection, login throttling, rate limits), with an automated test suite proving one user cannot access another's documents, chats, or files.
+   - Engineered per-document-balanced vector search using PostgreSQL window functions over pgvector, ensuring fair representation across multiple documents tagged in a single query.
+   - Built a token-by-token streaming chat UI (Server-Sent Events) with live citation rendering and a step-by-step execution trace, in vanilla JavaScript with no frontend framework.
+   - Wrote 64 automated tests covering auth, data isolation, async job mechanics, and the LLM pipeline (using a fake LLM client), running in GitHub Actions CI against a real Postgres instance on every push.
+   - Diagnosed subtle bugs found only through live testing against the real Gemini API: an embedding-batching mismatch, a pgvector type-casting issue, and a CSP policy gap.
+7. **Production Project - Resonance (Live AI Voice Generator SaaS)**:
    - Live URL: https://resonance-kappa-seven.vercel.app/
    - Tech: React, FastAPI, open-source Chatterbox voice model on Modal serverless GPUs, Paddle billing, S3 audio uploads, multi-tenant workspaces, Google OAuth & custom session auth.
-6. **Infrastructure & Upskilling**:
+8. **Infrastructure & Core Stack**:
    - GCP server setup (VM instances, Nginx reverse proxy, SSL certs).
-   - Tech Stack: React, Next.js, TypeScript, Electron.js, MobX, Python, FastAPI, Docker, PostgreSQL, MongoDB, WebSockets, SSE, gRPC, Playwright, Appium, Maestro, Claude API, Vercel AI SDK.
-   - Currently deep-diving into LangChain & LangGraph for multi-agent RAG pipelines (e.g. Talk-to-PDF apps).
-7. **Personal Interests, Hobbies & Gaming**:
+   - Tech Stack: React, Next.js 15, TypeScript, Electron.js, MobX, Python, FastAPI, Celery, RabbitMQ, Redis, SQLAlchemy (async), Alembic, Docker, PostgreSQL, MongoDB, WebSockets, SSE, gRPC, Playwright, Appium, Maestro, Claude API, Vercel AI SDK, Git/GitHub Actions (CI/CD).
+   - Databases & Vector Search: PostgreSQL, MongoDB, NoSQL, and Vector Databases — hands-on in production with pgvector (AskDocs), plus familiarity with Pinecone, Qdrant, and Chroma for vector search & embeddings workflows.
+   - Shipped two production LangChain/LangGraph multi-agent RAG applications (JobPilot & AskDocs) end-to-end, from pipeline design through deployment and CI.
+9. **Personal Interests, Hobbies & Gaming**:
    - **Hobbies**: Gym, outdoor cycling, and sports bikes 🏍️.
    - **PC Gaming**: Passionate PC gamer! All-time favorite games include **Subnautica**, **Skyrim**, **Fallout**, **Prototype**, and immersive action/exploration RPGs.
-8. **Contact & Socials**:
+10. **Contact & Socials**:
    - Email: **bhavishmayyar77@gmail.com**
    - LinkedIn: **https://www.linkedin.com/in/bhavish-mayyar-b19618217/**
    - GitHub: **https://github.com/Bhavish77**

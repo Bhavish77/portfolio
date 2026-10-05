@@ -66,14 +66,14 @@ export default function ChatConsole() {
     {
       id: "sec-projects",
       role: "assistant",
-      text: "🚀 Here are 4 of my top open-source tools and production applications:",
+      text: "🚀 Here are 6 of my top open-source tools and production applications:",
       widget: "main-projects",
       timestamp: new Date("2026-01-01T00:00:00Z"),
     },
     {
       id: "sec-techstack",
       role: "assistant",
-      text: "🛠️ Here is the complete breakdown of 20 core frameworks, databases, and AI tools I rely on daily:",
+      text: "🛠️ Here is the complete breakdown of the core frameworks, databases, and AI tools I rely on daily:",
       widget: "tech-stack",
       timestamp: new Date("2026-01-01T00:00:00Z"),
     },
